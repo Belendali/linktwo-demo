@@ -548,7 +548,7 @@ const A = {
   retake(){ S.camState = null; S.caption = ""; render(); },
   flip(){ S.flip = !S.flip; render(); },
   send(){ const same = S.reply; S.myPost = { t: same ? "22:31" : "22:24", c: S.caption.trim(), same, reacted:false }; S.caption = ""; S.camState = null; S.reply = false; clearInterval(cdT);
-    S.stack = ["app"]; S.tab = "camera"; toast(same ? "Same moment ✦ sent to Evan’s widget" : "Sent to Evan’s widget");
+    S.stack = ["app"]; S.tab = "log"; toast(same ? "Same moment ✦ sent to Evan’s widget" : "Sent to Evan’s widget");
     setTimeout(()=>{ if (S.myPost) { S.myPost.reacted = true; if (screenKey()==="log" || screenKey()==="photo-me") render(); } }, 6000); },
   snapback(){ S.reply = true; S.replyEnds = Date.now() + 9*60*1000 + 12000; S.push = false; toApp("camera"); startCountdown(); },
   openpush(){ A.snapback(); },
