@@ -1,0 +1,619 @@
+<title>LinkTwo</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600&family=Unbounded:wght@900&display=swap">
+<style>
+/* Layout: a dark showroom — a short brief + jump list on the left, the live phone on the right (stacked on phones). */
+:root{
+  color-scheme: dark;
+  --page:#0B090D; --bg:#000; --surf:#1E1A22; --chip:#2B2531; --act:#463C50; --line:#2B2531;
+  --fg:#FFFFFF; --grey:#9C92A6; --pink:#F08BB0; --ink:#2A1838; --red:#FF5A5F; --green:#34C759;
+  --sun:linear-gradient(90deg,#5B2E7A,#C77FA3 40%,#F2A08A 72%,#F6C35A);
+  --sun-d:linear-gradient(135deg,#5B2E7A,#C77FA3 40%,#F2A08A 72%,#F6C35A);
+  --ring-me:linear-gradient(135deg,#F08BB0,#F6C35A);
+  --ring-ev:linear-gradient(135deg,#7A4BB0,#C77FA3);
+  --f-body:"Lexend",ui-rounded,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-num:"Unbounded","Lexend",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--page);color:var(--fg);font-family:var(--f-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px;}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--pink);outline-offset:2px}
+.page{max-width:1080px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:40px;align-items:start}
+.brief{min-width:0;padding-top:24px}
+.brief h1{font-family:var(--f-num);font-size:44px;margin:0 0 6px;letter-spacing:-.5px}
+.brief h1 span{background:var(--sun);-webkit-background-clip:text;background-clip:text;color:transparent}
+.brief p{color:var(--grey);line-height:1.6;max-width:44ch;margin:0 0 20px;font-size:15px}
+.brief h2{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);font-weight:500;margin:22px 0 10px}
+.jumps{display:flex;flex-wrap:wrap;gap:8px}
+.jumps button{background:var(--surf);border:1px solid #ffffff12;padding:8px 13px;border-radius:999px;font-size:13px}
+.jumps button:hover{background:var(--chip)}
+.jumps button.sim{border-color:#F08BB055}
+.legend{font-size:12px;color:var(--grey);margin-top:18px;line-height:1.6;max-width:46ch}
+.stage{position:relative}
+.scaler{transform-origin:top center}
+.phone{width:375px;height:812px;border-radius:48px;background:var(--bg);position:relative;overflow:hidden;
+  box-shadow:0 0 0 10px #1a171d,0 0 0 11px #2c2830,0 40px 80px -20px #000;}
+@media (max-width:860px){.page{grid-template-columns:1fr}.brief{padding-top:0}.brief h1{font-size:34px}.stage{justify-self:center}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ---------- app ---------- */
+.scr{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;animation:in .22s ease}
+.scr::-webkit-scrollbar{display:none}
+@keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.sb{position:absolute;top:0;left:0;right:0;height:50px;display:flex;justify-content:space-between;align-items:center;padding:0 30px 0 36px;font-weight:600;font-size:16px;z-index:40;pointer-events:none}
+.hind{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:134px;height:5px;border-radius:3px;background:#fff;z-index:60;pointer-events:none}
+.t-grey{color:var(--grey)} .num{font-family:var(--f-num);font-weight:900;letter-spacing:-.5px}
+.row{display:flex;align-items:center} .col{display:flex;flex-direction:column} .between{justify-content:space-between} .g6{gap:6px}.g8{gap:8px}.g10{gap:10px}.g12{gap:12px}
+.av{display:inline-block;border-radius:50%;background-size:cover;background-position:center;flex:none}
+.ring{padding:3px;border-radius:50%;display:inline-flex;flex:none}
+.ring>.av{border:3px solid #000}
+.ring.me{background:var(--ring-me)} .ring.ev{background:var(--ring-ev)}
+.mesh,.chip.mesh,.btn.mesh{position:relative;isolation:isolate;color:var(--ink);background:
+  radial-gradient(circle at 85% 10%,rgba(255,231,194,.65),transparent 26%),
+  radial-gradient(circle at 88% 95%,#F6C35A,transparent 52%),
+  radial-gradient(circle at 50% 45%,#C77FA3,transparent 44%),
+  radial-gradient(circle at 10% 8%,rgba(91,46,122,.95),transparent 56%),#F2A08A;}
+.mesh::after{content:"";position:absolute;inset:0;border-radius:inherit;z-index:-1;pointer-events:none;opacity:.35;mix-blend-mode:soft-light;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+.btn{height:54px;border-radius:27px;width:100%;font-weight:600;font-size:17px;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn.plain{background:var(--chip);color:#fff;font-weight:500;font-size:16px}
+.btn.white{background:#fff;color:#000;font-weight:500;font-size:16px}
+.btn[disabled]{opacity:.35;pointer-events:none}
+.chip{background:var(--chip);border-radius:18px;padding:7px 12px;font-size:13px;font-weight:500;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.link{color:var(--grey);font-size:14px;font-weight:500;text-align:center;padding:8px}
+.circle{width:44px;height:44px;border-radius:22px;background:var(--surf);display:flex;align-items:center;justify-content:center;flex:none}
+.top{position:absolute;top:52px;left:16px;right:16px;display:flex;align-items:center;justify-content:space-between;z-index:30}
+.top .title{position:absolute;left:0;right:0;text-align:center;font-weight:600;font-size:17px;pointer-events:none}
+.pad{padding:0 16px}
+.card{background:var(--surf);border-radius:24px}
+.h1{font-size:28px;font-weight:600;line-height:1.2;text-align:center;text-wrap:balance}
+.sub{color:var(--grey);font-size:15px;line-height:1.45;text-align:center;text-wrap:balance}
+.foot{position:absolute;left:16px;right:16px;bottom:34px;display:flex;flex-direction:column;gap:6px;z-index:20}
+.pro{background:var(--pink);color:var(--ink);font-size:9px;font-weight:600;border-radius:8px;padding:2px 6px;letter-spacing:.04em}
+.toggle{width:50px;height:30px;border-radius:15px;background:var(--act);position:relative;flex:none;transition:background .2s}
+.toggle::after{content:"";position:absolute;top:2.5px;left:2.5px;width:25px;height:25px;border-radius:50%;background:#fff;transition:left .2s}
+.toggle.on{background:var(--pink)} .toggle.on::after{left:22.5px}
+.list{background:var(--surf);border-radius:22px;overflow:hidden}
+.li{display:flex;align-items:center;justify-content:space-between;min-height:54px;padding:0 16px;font-size:16px;width:100%;text-align:left}
+.li+.li{border-top:1px solid var(--line)}
+.li .v{color:var(--grey);font-size:15px;display:flex;align-items:center;gap:6px}
+input.field,textarea.field{width:100%;background:var(--surf);border:1.5px solid transparent;border-radius:20px;color:#fff;font:inherit;font-size:18px;padding:16px 18px;resize:none}
+input.field:focus,textarea.field:focus{outline:none;border-color:#F08BB0}
+.scrim{position:absolute;inset:0;background:#000a;z-index:70;animation:fade .2s}
+@keyframes fade{from{opacity:0}}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:var(--surf);border-radius:32px 32px 0 0;z-index:71;padding:30px 18px 40px;animation:up .28s cubic-bezier(.2,.8,.2,1)}
+.sheet::before{content:"";position:absolute;top:8px;left:50%;transform:translateX(-50%);width:40px;height:5px;border-radius:3px;background:#ffffff40}
+@keyframes up{from{transform:translateY(100%)}}
+.toast{position:absolute;left:50%;top:50px;transform:translateX(-50%);z-index:90;background:var(--chip);border-radius:22px;padding:9px 16px 9px 10px;font-size:14px;font-weight:500;display:flex;gap:8px;align-items:center;white-space:nowrap;animation:drop .3s ease;box-shadow:0 10px 30px #0008}
+.toast .ok{color:var(--pink);font-weight:600}
+@keyframes drop{from{opacity:0;transform:translate(-50%,-10px)}}
+.push{position:absolute;left:10px;right:10px;top:46px;z-index:95;background:#2a2530ee;backdrop-filter:blur(20px);border-radius:22px;padding:12px;display:flex;gap:10px;align-items:center;animation:drop .35s ease;text-align:left}
+.appicon{width:38px;height:38px;border-radius:10px;background:#000;display:flex;align-items:center;justify-content:center;flex:none}
+
+/* nav */
+.nav{position:absolute;left:20px;right:20px;bottom:30px;height:58px;display:flex;align-items:center;justify-content:space-between;z-index:50}
+.nav .c{width:58px;height:58px;border-radius:29px;background:var(--chip);box-shadow:inset 0 0 0 1px #ffffff14;display:flex;align-items:center;justify-content:center;position:relative}
+.nav .c.on{background:#fff}
+.nav .dot{position:absolute;top:12px;right:13px;width:10px;height:10px;border-radius:5px;background:var(--pink);border:2px solid var(--chip)}
+.nav .c.on .dot{border-color:#fff}
+.seg{height:58px;border-radius:29px;background:var(--chip);box-shadow:inset 0 0 0 1px #ffffff14;display:flex;padding:5px;gap:2px}
+.seg button{border-radius:24px;padding:0 22px;font-size:18px;color:#A79DB0}
+.seg button.on{background:var(--act);color:#fff;font-weight:500}
+.navfade{position:absolute;left:0;right:0;bottom:0;height:150px;z-index:45;pointer-events:none;background:linear-gradient(180deg,transparent,#000c 45%,#000);backdrop-filter:blur(0px)}
+
+/* home tiles */
+.tile{border-radius:30px;background:var(--surf);position:relative;overflow:hidden;text-align:left;display:block;width:100%}
+.tile .lab{position:absolute;left:16px;top:14px;font-size:15px;font-weight:500;line-height:1.25}
+.tile .lab small{display:block;font-size:13px;font-weight:400;color:var(--grey)}
+.bgimg{background-size:cover;background-position:center}
+.shade::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#0009,#0003 40%,#0005 75%,#000c)}
+.shade>*{position:relative}
+.tile.shade .lab{position:absolute}
+
+/* log */
+.lcard{position:relative;width:100%;height:276px;border-radius:34px;overflow:hidden;background:var(--surf);display:block;text-align:left}
+.lcard.photo::before{content:"";position:absolute;inset:0;background:#0000004d}
+.lcard.same{box-shadow:inset 0 0 0 2.5px transparent}
+.lcard .who{position:absolute;left:18px;top:18px;display:flex;align-items:center;gap:10px;font-size:20px;font-weight:500}
+.stamp{position:absolute;left:0;right:0;top:104px;text-align:center}
+.stamp .tm{font-family:var(--f-num);font-weight:900;font-size:30px}
+.stamp .cap{font-size:18px;font-weight:500;margin-top:2px}
+.gborder{position:absolute;inset:0;border-radius:inherit;padding:2.5px;background:var(--sun-d);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+
+/* emoji pop */
+.flyer{position:absolute;z-index:99;font-size:44px;pointer-events:none;animation:pump 1.6s cubic-bezier(.3,.7,.3,1) forwards}
+@keyframes pump{
+  0%{transform:translate(0,0) scale(.5) rotate(0);opacity:0}
+  5%{opacity:1}
+  31%{transform:translate(70px,-400px) scale(1.9) rotate(12deg)}
+  44%{transform:translate(74px,-414px) scale(1.75) rotate(4deg)}
+  75%{transform:translate(0,0) scale(1) rotate(0)}
+  83%{transform:translate(0,-26px) scale(1.12)}
+  91%{transform:translate(0,0) scale(1);opacity:1}
+  100%{transform:translate(0,0) scale(.55);opacity:0}}
+.spark{position:absolute;z-index:98;font-size:18px;pointer-events:none;animation:spark .65s ease-out forwards}
+@keyframes spark{0%{transform:translate(0,0) scale(.4);opacity:0}10%{opacity:1}60%{opacity:1}100%{transform:translate(var(--dx),var(--dy)) scale(.85);opacity:0}}
+.pop{animation:popb .35s ease}
+@keyframes popb{0%{transform:scale(1)}30%{transform:scale(.8)}70%{transform:scale(1.25)}100%{transform:scale(1)}}
+
+/* widgets */
+.w{border-radius:24px;overflow:hidden;position:relative;background:var(--surf);flex:none;background-size:cover;background-position:center}
+.w .lbl{position:absolute;left:12px;bottom:12px;display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600}
+.w .lbl i{font-style:normal;font-weight:400;opacity:.75;font-size:11px}
+.mini{width:20px;height:20px;border-radius:50%;background-size:cover;background-position:center;box-shadow:0 0 0 1.5px #C77FA3}
+</style>
+
+<div class="page">
+  <section class="brief">
+    <h1>Link<span>Two</span></h1>
+    <p>A tiny app for two — your partner or your best friend. Snap a photo and it lands on their home screen, answer one question a day together, and see each other’s status and distance at a glance.</p>
+    <h2>Jump to</h2>
+    <div class="jumps" id="jumps">
+      <button data-jump="ob-welcome">Onboarding</button>
+      <button data-jump="home">Home</button>
+      <button data-jump="camera">Camera</button>
+      <button data-jump="log">Log</button>
+      <button data-jump="me">Me</button>
+      <button data-jump="paywall">Couple Plan</button>
+      <button data-jump="homescreen">Widgets on home screen</button>
+    </div>
+    <h2>Pretend Evan…</h2>
+    <div class="jumps">
+      <button class="sim" data-sim="snap">just snapped a photo</button>
+      <button class="sim" data-sim="answer">answered today’s question</button>
+      <button class="sim" data-sim="pause">paused location</button>
+      <button class="sim" data-sim="anniv">it’s our anniversary</button>
+      <button class="sim" data-sim="reset">Reset demo</button>
+    </div>
+    <p class="legend">Everything in the phone is tappable. You are Leona in Shanghai; Evan is in Brooklyn — 12 hours apart, which is why every photo carries its own local time.</p>
+  </section>
+  <div class="stage" id="stage"><div class="scaler" id="scaler"><div class="phone" id="phone"></div></div></div>
+</div>
+
+<script>
+const IMG = n => `img/${n}.jpg`;
+const BG = { Everyday:["home","gym","cafe","office"], "Going out":["restaurant","cafe","home"], Outdoors:["beach","park","sunset"], "Around town":["office","restaurant","park"], Special:["sunset","beach","home"] };
+const BG_LABEL = {home:"Home",gym:"Gym",cafe:"Cafe",office:"Office",restaurant:"Restaurant",beach:"Beach",park:"Park",sunset:"Sunset"};
+const QUESTIONS = ["What tiny thing did I do this week that made you smile?","If we could teleport anywhere tonight, where would we go?","What’s a song that reminds you of me?","What do you miss most when we’re apart?"];
+const STATUSES = [["💻","Working"],["☕️","Coffee"],["🍜","Eating"],["🚇","Commuting"],["🏋️","Gym"],["😴","Sleeping"],["📚","Studying"],["🥺","Missing you"],["🎮","Gaming"],["🛍️","Shopping"],["🍻","Friends"],["✈️","Traveling"]];
+const TABS = ["home","camera","log","me"];
+
+const fresh = () => ({
+  stack:["ob-welcome"], name:"Leona", who:"partner", connected:true, pro:false, plan:"yearly", slide:1,
+  quiz:{qi:0, shuffles:2, evan:false, mine:"", photo:false, sent:false},
+  status:{e:"💻", l:"Working", bg:null}, draft:{e:"🥺", l:"Missing you", bg:"home", cat:"Everyday"},
+  myPost:null, caption:"", reply:false, replyEnds:0, reaction:null,
+  shareLoc:true, evanPaused:false, anniv:false, widgetAdded:false, flip:false,
+  days:[["🎉","1 year anniversary","Sun, Nov 2",12],["✈️","Next time we meet","Sat, Dec 20",60],["🎂","Evan’s birthday","Thu, Jan 14",85]],
+  newDay:{e:"✈️", n:"", d:"2026-12-20"}, code:"", obName:"Leona", pastDay:null,
+  sheet:null, toast:null, push:false, unlinkAsk:false, deleteAsk:false, success:false
+});
+let S = fresh();
+const $ = s => document.querySelector(s);
+const phone = $("#phone");
+const top_ = () => S.stack[S.stack.length - 1];
+
+/* ---------- small builders ---------- */
+const av = (img, s, ring) => ring ? `<span class="ring ${ring}"><span class="av" style="width:${s}px;height:${s}px;background-image:url(${IMG(img)})"></span></span>` : `<span class="av" style="width:${s}px;height:${s}px;background-image:url(${IMG(img)})"></span>`;
+const sb = () => `<div class="sb"><span>9:41</span><svg width="68" height="13" viewBox="0 0 68 13" fill="#fff"><rect y="8" width="3" height="4" rx="1"/><rect x="5" y="6" width="3" height="6" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" width="3" height="12" rx="1"/><path d="M30 3.5a9 9 0 0 1 11 0M32 6.3a5.5 5.5 0 0 1 7 0M34.4 9a2 2 0 0 1 2.2 0" stroke="#fff" stroke-width="1.6" fill="none" stroke-linecap="round"/><rect x="43.5" y=".5" width="21" height="11" rx="3.5" fill="none" stroke="#fff" stroke-opacity=".4"/><rect x="45.5" y="2.5" width="15" height="7" rx="2"/></svg></div>`;
+const I = {
+  back:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="m15 5-7 7 7 7" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  x:`<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="m7 7 10 10M17 7 7 17" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>`,
+  chev:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="m9 6 6 6-6 6" stroke="#9C92A6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  home:c=>`<svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M4 10.2 12 4l8 6.2V19a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 19z" stroke="${c}" stroke-width="2" stroke-linejoin="round"/><path d="M12 17.4s-3.1-1.8-3.1-3.9a1.65 1.65 0 0 1 3.1-.8 1.65 1.65 0 0 1 3.1.8c0 2.1-3.1 3.9-3.1 3.9z" fill="${c}"/></svg>`,
+  cal:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3.5" y="5" width="17" height="15.5" rx="3.5" stroke="#fff" stroke-width="1.8"/><path d="M8 3v4M16 3v4" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/><g fill="#fff"><circle cx="8" cy="11.5" r="1"/><circle cx="12" cy="11.5" r="1"/><circle cx="16" cy="11.5" r="1"/><circle cx="8" cy="15.5" r="1"/><circle cx="12" cy="15.5" r="1"/></g></svg>`,
+  heart:`<svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M12 20s-8-4.7-8-10.3A4.3 4.3 0 0 1 12 7.4a4.3 4.3 0 0 1 8 2.3C20 15.3 12 20 12 20z" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/></svg>`,
+  gheart:(s=22)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24"><defs><linearGradient id="gh" x1="3" y1="5" x2="21" y2="21" gradientUnits="userSpaceOnUse"><stop stop-color="#F08BB0"/><stop offset="1" stop-color="#F6C35A"/></linearGradient></defs><path d="M12 21S2.5 15.4 2.5 9A5 5 0 0 1 12 6.6 5 5 0 0 1 21.5 9C21.5 15.4 12 21 12 21z" fill="url(#gh)"/></svg>`,
+  reply:(c="#fff",s=18)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none"><path d="M10 6.5 4.5 12l5.5 5.5M5 12h9.5a5 5 0 0 1 5 5v1.5" stroke="${c}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  flip:`<svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M20 11a8 8 0 0 0-14.3-4.8M4 13a8 8 0 0 0 14.3 4.8" stroke="#fff" stroke-width="2" stroke-linecap="round"/><path d="M5.2 2.8v3.8H9M18.8 21.2v-3.8H15" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  shuffle:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M3 7h3.5c2 0 3.3 1 4.4 2.6l2.2 3.3C14.2 14.6 15.5 17 17.5 17H21M3 17h3.5c1.3 0 2.3-.5 3.1-1.3M14.4 8.3C15.2 7.5 16.2 7 17.5 7H21M18 4l3 3-3 3M18 14l3 3-3 3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  save:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 4v11M7 10.5l5 5 5-5M5 19.5h14" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  trash:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M5 7h14M10 7V5h4v2M7 7l1 12.5h8L17 7" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  pencil:`<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"/></svg>`,
+  plus:(c="#fff",s=14)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="${c}" stroke-width="2.6" stroke-linecap="round"/></svg>`,
+  arrow:`<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  camera:`<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3.5 8.8A2.6 2.6 0 0 1 6.1 6.2h1.8l1.4-2.1h5.4l1.4 2.1h1.8a2.6 2.6 0 0 1 2.6 2.6v7.9a2.6 2.6 0 0 1-2.6 2.6H6.1a2.6 2.6 0 0 1-2.6-2.6z" stroke="#fff" stroke-width="2"/><circle cx="12" cy="12.7" r="3.3" stroke="#fff" stroke-width="2"/></svg>`
+};
+const back = (x="back") => `<button class="circle" data-act="${x}" aria-label="Back">${x==="close"?I.x:I.back}</button>`;
+const mesh = (label, act, extra="", dis=false) => `<button class="btn mesh" data-act="${act}" ${dis?"disabled":""} ${extra}>${label}</button>`;
+const tgl = (on, act) => `<button class="toggle ${on?"on":""}" data-act="${act}" aria-pressed="${on}"></button>`;
+const progress = n => `<div class="row g6" style="position:absolute;top:72px;left:50%;transform:translateX(-50%);margin-left:14px">${[1,2,3,4,5].map(i=>`<span style="width:34px;height:4px;border-radius:2px;background:${i<=n?"var(--sun)":"var(--chip)"}"></span>`).join("")}</div>`;
+const hind = `<div class="hind"></div>`;
+
+/* ---------- widgets ---------- */
+const W = {
+  photo:(s=158)=>`<div class="w" style="width:${s}px;height:${s}px;background-image:url(${IMG("evan")})"><div style="position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,#0009)"></div><span class="chip" style="position:absolute;right:10px;top:10px;background:#0007;font-size:11px;padding:3px 8px">2m</span><div class="lbl"><span class="mini" style="background-image:url(${IMG("evan")})"></span>Evan <i>10:24</i></div></div>`,
+  status:(s=158)=>`<div class="w" style="width:${s}px;height:${s}px;background-image:url(${IMG("cafe")})"><div style="position:absolute;inset:0;background:linear-gradient(180deg,#0008,#0002 35%,#0003 70%,#000a)"></div><div class="lbl" style="top:12px;bottom:auto"><span class="mini" style="background-image:url(${IMG("evan")})"></span>Evan</div><div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding-top:14px"><span style="font-size:${s*.26}px">☕️</span><b style="font-size:${s*.095}px;margin-top:4px">At a café</b><span style="font-size:10px;opacity:.75">since 10:02</span></div></div>`,
+  couple:(h=158)=>`<div class="w" style="width:${h*338/158}px;height:${h}px;display:flex;gap:4px;background:#000">${[["evan","Evan","10:24"],["leona","You","22:31"]].map(([i,n,t])=>`<div style="flex:1;position:relative;background:url(${IMG(i)}) center/cover"><div style="position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,#0009)"></div><div class="lbl"><span class="mini" style="background-image:url(${IMG(i)})"></span>${n} <i>${t}</i></div></div>`).join("")}<span style="position:absolute;left:50%;top:12px;transform:translateX(-50%);width:30px;height:30px;border-radius:15px;background:#000;display:flex;align-items:center;justify-content:center">${I.gheart(16)}</span><span class="chip" style="position:absolute;right:10px;top:12px;background:#0007;font-size:10px;padding:3px 8px">520 days</span></div>`,
+  distance:(s=158)=>`<div class="w" style="width:${s}px;height:${s}px;background:url(${IMG("map")}) center/cover"><div style="position:absolute;inset:0;background:linear-gradient(180deg,#000a,#0005 40%,#0008 70%,#000e);"></div><svg style="position:absolute;left:${s*.26}px;top:${s*.15}px" width="${s*.45}" height="${s*.28}" viewBox="0 0 70 44" fill="none"><path d="M4 40C22 22 44 20 66 4" stroke="#fff" stroke-opacity=".85" stroke-width="2" stroke-dasharray="1.5 5" stroke-linecap="round"/></svg><span class="mini" style="position:absolute;right:${s*.18}px;top:${s*.07}px;width:${s*.18}px;height:${s*.18}px;background-image:url(${IMG("evan")});box-shadow:0 0 0 2px #C77FA3"></span><span class="mini" style="position:absolute;left:${s*.14}px;top:${s*.32}px;width:${s*.18}px;height:${s*.18}px;background-image:url(${IMG("leona")});box-shadow:0 0 0 2px #F6C35A"></span><div style="position:absolute;left:12px;bottom:12px"><span class="num" style="font-size:${s*.19}px">1.2</span> <span style="font-size:13px;font-weight:500">km</span><div style="font-size:10px;opacity:.7">apart · updated 2m</div></div></div>`
+};
+
+/* ---------- screens ---------- */
+const V = {};
+V["ob-welcome"] = () => `<div class="scr">${sb()}
+  <div style="position:absolute;left:8px;top:160px;width:360px;height:300px;border-radius:50%;background:var(--sun);opacity:.3;filter:blur(70px)"></div>
+  <div style="position:absolute;left:30px;top:112px;transform:rotate(4deg)">${W.couple(132)}</div>
+  <div style="position:absolute;left:26px;top:290px;transform:rotate(6deg)">${W.distance(132)}</div>
+  <div style="position:absolute;left:186px;top:276px;transform:rotate(-5deg)">${W.status(150)}</div>
+  <div class="pad col g12" style="position:absolute;top:494px;left:0;right:0;align-items:center">
+    <div class="h1" style="font-size:30px">Close, wherever you are</div>
+    <div class="sub">Snap little moments, answer one question a day and see each other’s status — right on your home screen.</div>
+  </div>
+  <div class="foot">${mesh("Get started","go:ob-account")}<button class="link" data-act="go:ob-account">I already have an account</button></div>${hind}</div>`;
+V["ob-account"] = () => `<div class="scr">${sb()}<div class="top">${back()}</div>
+  <div class="col g12" style="align-items:center;margin-top:150px;padding:0 24px">
+    <div class="appicon" style="width:84px;height:84px;border-radius:22px;background:var(--surf)">${I.gheart(44)}</div>
+    <div class="h1" style="margin-top:12px">Create your account</div>
+    <div class="sub">So your snaps, answers and days together are always saved</div></div>
+  <div class="foot" style="gap:12px"><button class="btn white" data-act="go:ob-name"> Continue with Apple</button><button class="btn plain" data-act="go:ob-name">Continue with Google</button><button class="btn plain" data-act="go:ob-name">Continue with phone number</button><div class="sub" style="font-size:12px;margin-top:4px">By continuing you agree to our Terms and Privacy Policy</div></div>${hind}</div>`;
+V["ob-name"] = () => `<div class="scr">${sb()}<div class="top">${back()}</div>${progress(1)}
+  <div class="pad col g12" style="margin-top:116px"><div class="h1">What’s your name?</div><div class="sub">This is how your person will see you</div>
+  <input class="field" id="obname" value="${S.obName}" autocomplete="off" style="margin-top:20px" aria-label="Your name"></div>
+  <div class="foot">${mesh("Next","obname")}</div>${hind}</div>`;
+V["ob-photo"] = () => `<div class="scr">${sb()}<div class="top">${back()}</div>${progress(2)}
+  <div class="pad col g12" style="margin-top:116px;align-items:center"><div class="h1">Add a photo</div><div class="sub">So they know it’s you on their home screen</div>
+  <div style="position:relative;margin:24px 0">${av("leona",160,"me")}<span class="circle" style="position:absolute;right:4px;bottom:4px;background:var(--chip);box-shadow:0 0 0 4px #000">${I.camera}</span></div>
+  <button class="btn plain" data-act="toast:Opening camera…">Take a selfie</button><button class="btn plain" data-act="toast:Opening your photos…">Choose from library</button></div>
+  <div class="foot">${mesh("Next","go:ob-bday")}<button class="link" data-act="go:ob-bday">Skip</button></div>${hind}</div>`;
+V["ob-bday"] = () => `<div class="scr">${sb()}<div class="top">${back()}</div>${progress(3)}
+  <div class="pad col g12" style="margin-top:116px"><div class="h1">When’s your birthday?</div><div class="sub">We’ll remind your person a few days before 🎂</div>
+  <input class="field" type="date" id="bday" value="1999-03-03" style="margin-top:24px;color-scheme:dark" aria-label="Birthday"></div>
+  <div class="foot">${mesh("Next","go:ob-who")}<button class="link" data-act="go:ob-who">Skip</button></div>${hind}</div>`;
+V["ob-who"] = () => { const o = (k,e,h,s) => `<button class="card row g12" data-act="who:${k}" style="padding:22px 18px;width:100%;text-align:left;position:relative;${S.who===k?"background:var(--act)":""}">${S.who===k?'<span class="gborder" style="border-radius:24px;padding:2px"></span>':""}<span style="width:56px;height:56px;border-radius:28px;background:#0004;display:flex;align-items:center;justify-content:center;font-size:28px">${e}</span><span class="col" style="flex:1"><b style="font-size:18px;font-weight:600">${h}</b><span class="t-grey" style="font-size:13px">${s}</span></span><span style="width:22px;height:22px;border-radius:11px;border:2px solid ${S.who===k?"var(--pink)":"var(--grey)"};background:${S.who===k?"radial-gradient(var(--ink) 3px,var(--pink) 4px)":"none"}"></span></button>`;
+  return `<div class="scr">${sb()}<div class="top">${back()}</div>${progress(4)}
+  <div class="pad col g12" style="margin-top:116px"><div class="h1" style="margin-bottom:16px">Who are you connecting with?</div>
+  ${o("partner","💞","My partner","Couples, long-distance, newlyweds")}${o("friend","👯","My best friend","Besties, siblings — anyone close")}
+  <div class="sub" style="font-size:13px;margin-top:8px">Only changes a few words — like “together since” vs “friends since”</div></div>
+  <div class="foot">${mesh("Next","go:ob-invite")}</div>${hind}</div>`; };
+V["ob-invite"] = () => inviteView(true);
+V["ob-perms"] = () => { const p = (e,h,s,on,act) => `<div class="card" style="padding:18px;display:grid;grid-template-columns:52px 1fr;gap:14px"><span style="width:52px;height:52px;border-radius:16px;background:var(--chip);display:flex;align-items:center;justify-content:center;font-size:26px">${e}</span><div class="col g6"><b style="font-weight:600;font-size:17px">${h}</b><span class="t-grey" style="font-size:13px;line-height:1.4">${s}</span><button class="chip ${on?"":"mesh"}" data-act="${act}" style="align-self:flex-end;${on?"background:var(--act)":""}">${on?"Allowed ✓":"Allow"}</button></div></div>`;
+  return `<div class="scr">${sb()}<div class="pad col g12" style="margin-top:108px"><div class="h1">Two quick things</div><div class="sub" style="margin-bottom:16px">So it works the way it should</div>
+  ${p("🔔","Notifications","When Evan snaps, answers or nudges you",S.permN,"perm:N")}${p("📍","Location","Shows distance on the map & widget. Pause anytime.",S.permL,"perm:L")}</div>
+  <div class="foot">${mesh("Continue","go:ob-widget")}<button class="link" data-act="go:ob-widget">Not now</button></div>${hind}</div>`; };
+V["ob-widget"] = () => `<div class="scr">${sb()}<div class="pad col g12" style="margin-top:108px"><div class="h1">Evan, on your home screen</div><div class="sub">Their latest photo and status, always one glance away</div></div>
+  <div style="position:absolute;left:18px;top:250px;width:340px;height:260px;border-radius:50%;background:var(--sun);opacity:.25;filter:blur(70px)"></div>
+  <div class="col g12" style="position:absolute;top:262px;left:21px">${W.couple(152)}<div class="row g12">${W.photo(152)}${W.status(152)}</div></div>
+  <div class="foot">${mesh("Add widget","sheet:widgetguide")}<button class="link" data-act="go:paywall">Maybe later</button></div>${hind}</div>`;
+
+function inviteView(onb){ return `<div class="scr">${sb()}<div class="top">${back()}</div>${onb?progress(5):""}
+  <div style="position:absolute;left:58px;top:102px;width:260px;height:130px;border-radius:50%;background:var(--sun);opacity:.3;filter:blur(50px)"></div>
+  <div class="row" style="justify-content:center;gap:12px;margin-top:120px;position:relative">${av("leona",78,"me")}${I.gheart(24)}<span style="width:84px;height:84px;border-radius:42px;border:1.5px dashed var(--grey);display:flex;align-items:center;justify-content:center;background:var(--surf)">${I.plus("#9C92A6",24)}</span></div>
+  <div class="pad col g10" style="margin-top:22px"><div class="h1">Invite your person</div><div class="sub">Your partner or your best friend — it’s just the two of you</div>
+  <div class="card" style="padding:18px;margin-top:12px"><div class="t-grey" style="font-size:13px">Your code</div><div class="row between" style="margin-top:6px"><span class="num" style="font-size:28px;letter-spacing:2px">K7Q · 2M9</span><button class="chip" data-act="copy">Copy</button></div><div class="t-grey" style="font-size:12px;margin-top:6px">expires in 24h · one person only</div></div>
+  <div style="margin-top:8px">${mesh("Share invite link","toast:Share sheet opens with your invite link")}</div>
+  <button class="link" data-act="go:code">Have a code? Enter it ›</button></div>
+  ${onb?`<div class="foot"><button class="link" data-act="go:ob-perms">Skip for now — explore on my own</button></div>`:""}${hind}</div>`; }
+V["invite"] = () => inviteView(false);
+V["code"] = () => { const c = (S.code + "      ").slice(0,6); return `<div class="scr">${sb()}<div class="top">${back()}<span class="title">Enter code</span></div>
+  <div class="pad col g12" style="margin-top:120px;align-items:center"><div class="sub">Ask them for their 6-character code</div>
+  <label class="row g8" style="margin-top:16px;position:relative">${[...c].map((ch,i)=>`<span style="width:46px;height:58px;border-radius:14px;background:var(--surf);display:flex;align-items:center;justify-content:center;${i===Math.min(S.code.length,5)?"box-shadow:inset 0 0 0 2px #F08BB0":""}" class="num">${ch.trim()?`<span style="font-size:24px">${ch}</span>`:""}</span>`).join("")}
+  <input id="codein" maxlength="6" value="${S.code}" autocomplete="off" aria-label="Their code" style="position:absolute;inset:0;opacity:0;font-size:16px;text-transform:uppercase"></label>
+  <button class="link" data-act="fillcode">Paste EV4N2X (demo)</button></div>
+  <div class="foot">${mesh("Connect","go:confirm","",S.code.length<6)}</div>${hind}</div>`; };
+V["confirm"] = () => `<div class="scr">${sb()}<div class="top">${back()}</div>
+  <div style="position:absolute;left:58px;top:132px;width:260px;height:130px;border-radius:50%;background:var(--sun);opacity:.3;filter:blur(50px)"></div>
+  <div class="row" style="justify-content:center;gap:12px;margin-top:150px;position:relative">${av("leona",78,"me")}${I.gheart(24)}${av("evan",78,"ev")}</div>
+  <div class="pad col g10" style="margin-top:22px"><div class="h1">Connect with Evan?</div><div class="sub" style="font-size:14px">@evan.lee · Brooklyn, NY</div>
+  <div class="card col g12" style="padding:18px;margin-top:14px;font-size:14px">${[["📸","Your snaps go to each other’s Log & widget"],["💬","One question a day, answered together"],["📍","Status, distance & battery (you can pause)"]].map(([e,t])=>`<div class="row g12"><span style="font-size:20px">${e}</span>${t}</div>`).join("")}</div></div>
+  <div class="foot">${mesh("Connect","connect")}<button class="link" data-act="back">Not now</button></div>${hind}</div>`;
+V["connected"] = () => `<div class="scr">${sb()}
+  <div style="position:absolute;left:58px;top:132px;width:260px;height:130px;border-radius:50%;background:var(--sun);opacity:.35;filter:blur(50px)"></div>
+  <div class="row" style="justify-content:center;gap:12px;margin-top:150px;position:relative">${av("leona",78,"me")}${I.gheart(24)}${av("evan",78,"ev")}</div>
+  <div class="pad col g10" style="margin-top:22px"><div class="h1">You’re connected 💞</div><div class="sub">${S.name} & Evan</div>
+  <div class="card row between" style="padding:16px 16px 16px 18px;margin-top:20px"><div class="col"><b style="font-weight:500">When did it all start?</b><span class="t-grey" style="font-size:12px">Starts your days-together counter</span></div><span class="chip">May 20, 2025 ›</span></div></div>
+  <div class="foot">${mesh("Take your first snap","tab:camera:reset")}<button class="link" data-act="sheet:widgetguide">Add a widget first</button></div>${hind}</div>`;
+
+/* ---- app tabs ---- */
+const nav = active => `<div class="navfade"></div><div class="nav">
+  <button class="c ${active==="home"?"on":""}" data-act="tab:home" aria-label="Home">${I.home(active==="home"?"#1E1A22":"#fff")}${S.quiz.sent&&S.quiz.evan?"":`<span class="dot"></span>`}</button>
+  <div class="seg"><button class="${active==="camera"?"on":""}" data-act="tab:camera">camera</button><button class="${active==="log"?"on":""}" data-act="tab:log">logs</button></div>
+  <button class="c" data-act="tab:me" aria-label="Me" style="${active==="me"?"background:#fff":""}">${av("leona",48)}</button></div>`;
+
+V.home = () => { const q = QUESTIONS[S.quiz.qi]; const st = S.status;
+  const anniv = S.anniv ? `<button class="tile mesh" data-act="toast:Share card ready" style="height:108px;padding:16px 18px;color:var(--ink)"><div style="font-size:13px;font-weight:500">Today · Nov 2</div><div><span class="num" style="font-size:32px">1 year</span> <span style="font-weight:500">together 🎉</span></div><div style="font-size:12px;opacity:.8">365 days of you, Evan & ${S.name}</div><span class="chip" style="position:absolute;right:16px;top:16px;background:#000;color:#fff">Share</span></button>`
+   : `<button class="tile" data-act="go:days" style="height:108px;padding:16px 18px"><div class="t-grey" style="font-size:13px">Evan & you</div><div><span class="num" style="font-size:34px">520</span> <span style="font-weight:500">${S.who==="friend"?"days as friends":"days together"}</span></div><div style="position:absolute;right:18px;top:18px;text-align:right"><div style="font-weight:500">1 year</div><div class="t-grey" style="font-size:12px">in 12 days · Nov 2</div></div><div style="position:absolute;left:18px;right:18px;bottom:18px;height:4px;border-radius:2px;background:var(--chip)"><div style="width:96%;height:100%;border-radius:2px;background:var(--sun)"></div></div></button>`;
+  const quizSub = S.quiz.sent && S.quiz.evan ? `<span style="color:#fff">✦ Both answered</span>` : `<span style="color:var(--pink)">#128 · ${S.quiz.sent?"waiting for Evan":"your turn"}</span>`;
+  return `<div class="scr">${sb()}<div class="col g12" style="padding:60px 12px 140px">
+  ${anniv}
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:11px">
+    <button class="tile" data-act="go:quiz" style="height:218px"><div class="lab">Daily Quiz<small>${quizSub}</small></div>${S.quiz.sent&&S.quiz.evan?"":`<span style="position:absolute;right:16px;top:20px;width:8px;height:8px;border-radius:4px;background:var(--pink)"></span>`}<div style="position:absolute;left:16px;right:14px;top:72px;font-weight:600;font-size:16px;line-height:1.35">${q}</div><div class="row g6 t-grey" style="position:absolute;left:16px;bottom:16px;font-size:12px">${av("evan",22)}${S.quiz.evan?"Evan answered":"Not answered yet"}</div></button>
+    <button class="tile bgimg shade" data-act="go:map" style="height:218px;background-image:url(${IMG("map")});filter:saturate(.6)"><div class="lab">Map<small style="color:#ffffffb0">${S.evanPaused?"Evan paused sharing":"Evan · Santa Croce"}</small></div>
+      ${S.evanPaused?"":`<svg style="position:absolute;left:46px;top:92px" width="80" height="70" viewBox="0 0 80 70" fill="none"><path d="M4 66C20 40 55 35 76 4" stroke="#000" stroke-width="2.5" stroke-dasharray="2 6" stroke-linecap="round"/></svg><span style="position:absolute;left:112px;top:76px">${av("evan",30,"ev")}</span>`}<span style="position:absolute;left:30px;top:150px">${av("leona",30,"me")}</span>${S.evanPaused?"":`<span class="chip" style="position:absolute;left:74px;top:124px;background:#000">1.2 km</span>`}<div class="t-grey" style="position:absolute;left:16px;bottom:16px;font-size:12px;color:#ffffffb0">updated 2 min ago</div></button>
+    <button class="tile bgimg shade" data-act="sheet:evan" style="height:200px;background-image:url(${IMG("cafe")})"><div class="lab">Evan<small style="color:#ffffffb0">10:24 am 🇺🇸</small></div><span style="position:absolute;right:16px;top:16px">${av("evan",28)}</span><div class="col" style="position:absolute;inset:0;align-items:center;justify-content:center;padding-top:20px"><span style="font-size:48px">☕️</span><b style="font-weight:500;font-size:17px">At a café</b></div><div class="t-grey" style="position:absolute;left:16px;bottom:16px;font-size:12px;color:#ffffffbb">🔋 64%</div></button>
+    <button class="tile ${st.bg?"bgimg shade":""}" data-act="sheet:status" style="height:200px;${st.bg?`background-image:url(${IMG(st.bg)})`:""}"><div class="lab">You<small style="${st.bg?"color:#ffffffb0":""}">tap to change</small></div><span style="position:absolute;right:16px;top:16px">${av("leona",28)}</span><div class="col" style="position:absolute;inset:0;align-items:center;justify-content:center;padding-top:20px"><span style="font-size:48px">${st.e}</span><b style="font-weight:500;font-size:17px">${st.l}</b></div><div class="t-grey" style="position:absolute;left:16px;bottom:16px;font-size:12px;${st.bg?"color:#ffffffbb":""}">🔋 88%</div></button>
+  </div>
+  ${S.widgetAdded?"":`<div class="card row between" style="padding:10px 10px 10px 14px;border-radius:22px"><span class="row g10" style="font-size:14px;font-weight:500"><svg width="26" height="26" viewBox="0 0 26 26"><rect x="1" y="1" width="11" height="11" rx="3.5" fill="#F08BB0"/><rect x="14" y="1" width="11" height="11" rx="3.5" fill="#fff" fill-opacity=".35"/><rect x="1" y="14" width="24" height="11" rx="3.5" fill="#fff" fill-opacity=".35"/></svg>Evan, on your home screen</span><span class="row g6"><button class="chip" style="background:#fff;color:#000" data-act="sheet:widgetguide">Add</button><button data-act="widgetAdded" aria-label="Dismiss" style="padding:4px">${I.x}</button></span></div>`}
+  </div>${nav("home")}${hind}</div>`; };
+
+V.camera = () => { const r = S.reply; const secs = Math.max(0, Math.round((S.replyEnds - Date.now())/1000));
+  const preview = S.camState==="preview";
+  return `<div class="scr" style="overflow:hidden">${sb()}
+  ${preview?"":r?`<div class="chip mesh" style="position:absolute;top:52px;left:50%;transform:translateX(-50%);z-index:20;padding:5px 14px 5px 6px">${av("evan",22)}<span id="countdown">Snapping back to Evan · ${Math.floor(secs/60)}:${String(secs%60).padStart(2,"0")}</span></div>`
+   :`<div class="chip" style="position:absolute;top:53px;left:50%;transform:translateX(-50%);z-index:20;background:var(--surf);font-weight:400;color:#CFC6D6;padding:4px 12px 4px 6px">${av("evan",22)}<span style="width:7px;height:7px;border-radius:4px;background:var(--green)"></span>Evan · 10:24 am 🇺🇸</div>`}
+  <div style="position:absolute;left:12px;top:96px;width:351px;height:610px;border-radius:38px;overflow:hidden;background:url(${IMG(S.flip?"home":"leona")}) center/cover">
+    <div style="position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,#0007)"></div>
+    ${r&&!preview?`<div style="position:absolute;left:14px;top:14px;width:72px;height:96px;border-radius:14px;background:url(${IMG("evan")}) center/cover;box-shadow:0 0 0 2px #fff"><span class="chip" style="position:absolute;left:50%;bottom:5px;transform:translateX(-50%);font-size:10px;padding:2px 7px;background:#0009;white-space:nowrap">Evan · 10:24</span></div>`:""}
+    <div style="position:absolute;left:0;right:0;top:250px;text-align:center"><div class="num" style="font-size:34px">🇨🇳 22:${r?"31":"24"}</div>
+      ${preview?`<input id="caption" class="capin" value="${S.caption}" placeholder="+ add a caption" maxlength="40" aria-label="Caption" style="margin-top:6px;background:transparent;border:0;color:#fff;text-align:center;font:500 18px var(--f-body);width:90%;outline:none;text-shadow:0 1px 6px #0008">`:`<div style="opacity:.7;margin-top:4px">add a caption…</div>`}</div>
+    ${preview?"":`<button data-act="shutter" aria-label="Take photo" style="position:absolute;left:132px;top:500px;width:86px;height:86px;border-radius:43px;box-shadow:inset 0 0 0 5px #fff;display:flex;align-items:center;justify-content:center"><span class="mesh" style="width:66px;height:66px;border-radius:33px;background:radial-gradient(circle at 30% 20%,#4A8EE000 0,transparent 0),radial-gradient(circle at 85% 10%,rgba(255,231,194,.65),transparent 30%),radial-gradient(circle at 88% 92%,#F6C35A,transparent 55%),radial-gradient(circle at 50% 45%,#C77FA3,transparent 45%),radial-gradient(circle at 12% 10%,rgba(91,46,122,.95),transparent 58%),#F2A08A"></span></button>
+      <button data-act="flip" aria-label="Flip camera" style="position:absolute;right:62px;top:529px">${I.flip}</button>`}
+  </div>
+  ${preview?`<div class="row between" style="position:absolute;left:20px;right:20px;bottom:30px"><button class="circle" style="width:56px;height:56px;border-radius:28px" data-act="retake" aria-label="Retake">${I.x}</button><button class="row g10" data-act="send" style="background:#fff;color:#000;border-radius:29px;padding:8px 22px 8px 8px;font-size:17px;font-weight:500">${av("evan",40)}Send to Evan ${I.arrow}</button></div>`:nav("camera")}
+  ${hind}</div>`; };
+
+const logCard = (who, post) => { const ev = who === "evan";
+  if (!ev && !post) return `<div class="lcard" style="height:276px"><div class="who" style="color:var(--grey)">${av("leona",34)}You</div><div class="col g8" style="position:absolute;inset:0;align-items:center;justify-content:center;padding-top:20px"><span class="num" style="font-size:30px;opacity:.18">🇨🇳 22:24</span><span class="t-grey" style="font-size:14px">Snap back now to make a same moment</span><button class="chip mesh" data-act="snapback" style="padding:10px 18px;font-size:15px">${I.reply("#2A1838")}Snap back</button></div></div>`;
+  const same = S.myPost && S.myPost.same;
+  const p = ev ? {img:"evan", t:"🇺🇸 10:24", c:"coffee before work ☕"} : {img:"leona", t:"🇨🇳 "+post.t, c:post.c||""};
+  return `<button class="lcard photo" data-act="go:${ev?"photo-evan":"photo-me"}" style="background:url(${IMG(p.img)}) center/cover">${same?'<span class="gborder"></span>':""}
+    <div class="who">${av(p.img,34)}${ev?"Evan":"You"}</div><div class="stamp"><div class="tm">${p.t}</div>${p.c?`<div class="cap">${p.c}</div>`:""}</div>
+    ${ev?`<span style="position:absolute;right:18px;bottom:18px">${S.reaction?`<span style="font-size:24px">${S.reaction}</span>`:I.heart}</span>`:(S.myPost&&S.myPost.reacted?`<span class="chip" style="position:absolute;right:16px;bottom:16px;background:#0008;font-size:12px">Evan ❤️</span>`:"")}</button>`; };
+V.log = () => { const same = S.myPost && S.myPost.same;
+  return `<div class="scr">${sb()}<div class="row between" style="padding:58px 16px 0 24px"><div class="row g8" style="align-items:baseline"><b style="font-size:24px;font-weight:600">Today</b><span class="t-grey" style="font-size:14px">Wed, Oct 21</span></div><button class="circle" data-act="go:calendar" aria-label="Calendar" style="width:52px;height:48px;border-radius:24px">${I.cal}</button></div>
+  <div class="row g8" style="justify-content:center;margin:10px 0 12px">${["d","d","h","d","h","h","d"].map(k=>k==="h"?`<span style="color:var(--pink);font-size:12px">♥</span>`:`<span style="width:8px;height:8px;border-radius:4px;background:#4A4052"></span>`).join("")}<span style="width:14px;height:14px;border-radius:7px;background:${same?"var(--pink)":"#fff"};box-shadow:0 0 0 3px #555"></span></div>
+  <div class="col" style="gap:8px;padding:0 12px 140px;position:relative">${logCard("evan")}${same?`<span class="chip mesh" style="position:absolute;left:50%;top:268px;transform:translateX(-50%);z-index:5;box-shadow:0 0 0 3px #000">✦ Same moment · 7 min apart</span>`:""}${logCard("me",S.myPost)}</div>
+  ${nav("log")}${hind}</div>`; };
+const photoDetail = (ev) => { const p = ev?{img:"evan",n:"Evan",s:"Wed 10:24 am · Brooklyn",t:"🇺🇸 10:24",c:"coffee before work ☕"}:{img:"leona",n:"You",s:`Wed ${S.myPost.t} · Shanghai`,t:"🇨🇳 "+S.myPost.t,c:S.myPost.c};
+  return `<div class="scr" style="overflow:hidden">${sb()}<div style="position:absolute;left:12px;top:54px;width:351px;height:620px;border-radius:36px;overflow:hidden;background:url(${IMG(p.img)}) center/cover">
+    <div style="position:absolute;inset:0;background:linear-gradient(180deg,#0008,#0002 20%,#0002 80%,#0007)"></div>
+    <div class="row g10" style="position:absolute;left:14px;top:14px"><button class="circle" style="width:40px;height:40px;background:#0008" data-act="back" aria-label="Back">${I.back}</button>${av(p.img,30)}<div class="col"><b style="font-weight:500;font-size:15px">${p.n}</b><span style="font-size:12px;opacity:.75">${p.s}</span></div></div>
+    <div class="stamp" style="top:270px"><div class="tm">${p.t}</div>${p.c?`<div class="cap">${p.c}</div>`:""}</div></div>
+  ${ev?`<div class="row between" style="position:absolute;left:12px;right:12px;top:694px"><div class="row" id="rx" style="background:var(--surf);border-radius:28px;padding:6px 10px;gap:2px">${["❤️","😂","🥺","🔥","😘"].map(e=>`<button data-act="react:${e}" style="font-size:26px;width:40px;height:40px;border-radius:20px;${S.reaction===e?"background:var(--act)":""}">${e}</button>`).join("")}</div><button class="chip mesh" data-act="snapback" style="padding:15px 18px;border-radius:28px;font-size:15px">${I.reply("#2A1838")}Snap back</button></div>`
+   :`<div class="row between" style="position:absolute;left:12px;right:12px;top:696px"><span class="chip" style="background:var(--surf);padding:8px 16px 8px 8px;font-size:14px">${av("evan",30)}${S.myPost.reacted?"Seen by Evan · ❤️":"Seen by Evan"}</span><span class="row g10"><button class="circle" style="width:48px;height:48px;border-radius:24px" data-act="toast:Saved to Photos" aria-label="Save">${I.save}</button><button class="circle" style="width:48px;height:48px;border-radius:24px" data-act="askdelete" aria-label="Delete">${I.trash}</button></span></div>`}
+  ${hind}</div>`; };
+V["photo-evan"] = () => photoDetail(true);
+V["photo-me"] = () => photoDetail(false);
+V.calendar = () => { const both=new Set([1,2,3,5,6,7,8,9,10,12,13,14,15,16,17,19,20]), same=new Set([3,8,14,19,20]), evanOnly=new Set([4,18]), meOnly=new Set([11]);
+  let cells = ""; for (let i=0;i<3;i++) cells += `<span></span>`;
+  for (let d=1; d<=31; d++){ const has = d<=20 && (both.has(d)||evanOnly.has(d)||meOnly.has(d)); const today = d===21;
+    if (has||today){ const top = both.has(d)||evanOnly.has(d)||today, bot = both.has(d)||meOnly.has(d)||(today&&S.myPost);
+      cells += `<button data-act="${today?"tab:log":"past:"+d}" style="height:64px;border-radius:12px;overflow:hidden;position:relative;display:grid;grid-template-rows:1fr 1fr;background:var(--chip);${today?"box-shadow:inset 0 0 0 2px #fff":""}"><span style="background:${top?`url(${IMG("evan")}) center/cover`:"var(--chip)"}"></span><span style="background:${bot?`url(${IMG("leona")}) center/cover`:"var(--chip)"}"></span><span style="position:absolute;inset:0;background:#0004"></span>${same.has(d)?'<span class="gborder" style="padding:2px"></span><span style="position:absolute;right:5px;bottom:3px;color:var(--pink);font-size:11px">♥</span>':""}<b style="position:absolute;left:6px;top:4px;font-size:12px;font-weight:600">${d}</b></button>`; }
+    else cells += `<span style="height:64px;border-radius:12px;background:var(--surf);opacity:${d>21?.5:1};font-size:12px;color:var(--grey);padding:4px 6px">${d}</span>`; }
+  return `<div class="scr">${sb()}<div class="top">${back()}<span class="title"><b style="font-size:24px;font-weight:600">October</b> <span class="t-grey" style="font-weight:400;font-size:15px">2026</span></span></div>
+  <div style="padding:110px 12px 40px"><div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;text-align:center;color:var(--grey);font-size:12px;margin-bottom:8px">${"MTWTFSS".split("").map(c=>`<span>${c}</span>`).join("")}</div>
+  <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px">${cells}</div>
+  <div class="card row between" style="padding:16px 18px;margin-top:20px">${[["20","days snapped"],["5","same moments"],["38","photos"]].map(([n,l])=>`<div class="col"><span class="num" style="font-size:22px">${n}</span><span class="t-grey" style="font-size:12px">${l}</span></div>`).join("")}</div>
+  <div class="t-grey" style="text-align:center;font-size:12px;margin-top:14px">Top = Evan · Bottom = you · <span style="color:var(--pink)">♥</span> same moment</div></div>${hind}</div>`; };
+V.past = () => { const d = S.pastDay || 19; const dow = ["Thu","Fri","Sat","Sun","Mon","Tue","Wed"][(d-1)%7];
+  return `<div class="scr">${sb()}<div class="row between" style="padding:58px 16px 0 16px"><div class="row g10">${back()}<div class="row g8" style="align-items:baseline"><b style="font-size:24px;font-weight:600">${dow}</b><span class="t-grey" style="font-size:14px">Oct ${d}</span></div></div><button class="chip" data-act="tab:log" style="padding:10px 14px;background:var(--surf)">Today ›</button></div>
+  <div class="col" style="gap:8px;padding:20px 12px 40px">
+   <div class="lcard photo" style="background:url(${IMG("evan")}) center/cover"><div class="who">${av("evan",34)}Evan</div><div class="stamp"><div class="tm">🇺🇸 08:12</div><div class="cap">morning run 🏃</div></div></div>
+   <div class="lcard photo" style="background:url(${IMG("leona")}) center/cover"><div class="who">${av("leona",34)}You</div><div class="stamp"><div class="tm">🇨🇳 20:40</div><div class="cap">dinner with mom</div></div></div>
+   <div class="t-grey" style="text-align:center;font-size:12px;margin-top:6px">Past days can’t be re-snapped — that’s what keeps it real.</div></div>${hind}</div>`; };
+
+/* ---- home subpages ---- */
+V.quiz = () => { const q = QUESTIONS[S.quiz.qi], Z = S.quiz;
+  if (Z.sent && Z.evan) return `<div class="scr">${sb()}<div class="top">${back()}<span class="title">Daily Quiz</span><span class="chip">#128</span></div>
+   <div class="pad col g12" style="padding-top:116px;padding-bottom:40px"><div style="font-size:20px;font-weight:600;line-height:1.3">${q}</div>
+   <span class="chip mesh" style="align-self:flex-start">✦ You both answered · 🔥 13 days</span>
+   <div class="card col g12" style="padding:16px"><div class="row g8">${av("evan",28)}<b style="font-weight:500">Evan</b><span class="t-grey" style="font-size:13px">10:31 am</span></div><div style="font-size:17px;line-height:1.4">The way you laughed at my terrible joke on FaceTime — I replayed it all day</div>
+     <div class="row g8">${["❤️","😂","🥺","🔥"].map(e=>`<button data-act="qreact:${e}" style="width:40px;height:32px;border-radius:16px;background:${S.qreact===e?"var(--act)":"var(--chip)"}">${e}</button>`).join("")}</div></div>
+   <div class="card col g12" style="padding:16px"><div class="row g8">${av("leona",28)}<b style="font-weight:500">You</b><span class="t-grey" style="font-size:13px">10:38 pm</span></div><div class="row g12" style="align-items:flex-start"><div style="font-size:17px;line-height:1.4;flex:1;min-width:0;word-wrap:break-word">${esc(Z.mine)}</div>${Z.photo?`<span style="width:74px;height:96px;border-radius:14px;background:url(${IMG("leona")}) center/cover;flex:none"></span>`:""}</div><span class="chip" style="align-self:flex-start;font-size:12px">Evan ❤️</span></div>
+   <div class="card row between" style="padding:12px 14px 12px 18px;border-radius:22px"><span class="t-grey" style="font-size:14px">Next question at 8:00 pm</span><button class="chip" data-act="go:pastq">Past questions ›</button></div></div>${hind}</div>`;
+  return `<div class="scr">${sb()}<div class="top">${back()}<span class="title">Daily Quiz</span><span class="chip">#128</span></div>
+   <div class="pad col g12" style="padding-top:116px;padding-bottom:120px"><div style="font-size:26px;font-weight:600;line-height:1.25">${q}</div>
+   ${!Z.evan&&!Z.sent?`<button class="chip" data-act="shuffle" style="align-self:flex-start;padding:6px 14px 6px 6px" ${Z.shuffles<1?"disabled style='opacity:.4'":""}><span style="width:28px;height:28px;border-radius:14px;background:var(--act);display:flex;align-items:center;justify-content:center">${I.shuffle}</span>Shuffle <span class="t-grey" style="font-weight:400">· ${Z.shuffles} left today</span></button>`:""}
+   <div class="card col g10" style="padding:16px"><div class="row g8">${av("evan",28)}<b style="font-weight:500">Evan</b><span class="t-grey" style="font-size:13px">${Z.evan?"answered 10:31":"hasn’t answered yet"}</span></div>
+     ${Z.evan?`<div class="col g6" style="filter:blur(4px)"><span style="height:9px;width:90%;border-radius:5px;background:#ffffff55"></span><span style="height:9px;width:60%;border-radius:5px;background:#ffffff55"></span></div><span class="t-grey" style="font-size:13px">🔒 Answer to see Evan’s</span>`
+       :`<span class="t-grey" style="font-size:13px">${Z.sent?"We’ll show you both answers once Evan replies.":"You’re first today — not into this one? Shuffle it."}</span>`}</div>
+   ${Z.sent?`<div class="card col g10" style="padding:16px"><div class="row g8">${av("leona",28)}<b style="font-weight:500">You</b><span class="t-grey" style="font-size:13px">sent</span></div><div style="font-size:17px">${esc(Z.mine)}</div></div>`
+    :`<div class="card col g12" style="padding:16px"><div class="row g8">${av("leona",28)}<b style="font-weight:500">You</b></div><textarea id="qans" class="field" rows="3" maxlength="200" placeholder="Type your answer…" style="padding:4px 0;background:none;border:0;font-size:17px">${esc(Z.mine)}</textarea>
+     ${Z.photo?`<span style="position:relative;width:72px;height:92px;border-radius:14px;background:url(${IMG("leona")}) center/cover"><button data-act="qphoto" aria-label="Remove photo" style="position:absolute;right:4px;top:4px;width:22px;height:22px;border-radius:11px;background:#0009;display:flex;align-items:center;justify-content:center">${I.x}</button></span>`:""}
+     <div class="row between"><button class="chip" data-act="qphoto">${Z.photo?"Change photo":"+ Photo"}</button><span class="t-grey" style="font-size:12px" id="qcount">${Z.mine.length} / 200</span></div></div>`}
+   </div>${Z.sent?"":`<div class="foot">${mesh("Send","qsend","id='qsendbtn'",!Z.mine.trim())}</div>`}${hind}</div>`; };
+V.pastq = () => `<div class="scr">${sb()}<div class="top">${back()}<span class="title">Past questions</span></div>
+  <div class="pad col g8" style="padding-top:116px;padding-bottom:40px"><div class="card row between" style="padding:16px 18px;margin-bottom:8px"><div class="col"><span><span style="font-size:24px">🔥</span> <span class="num" style="font-size:30px">13</span></span><span class="t-grey" style="font-size:13px">days in a row · best 21</span></div><div class="row g6">${[1,1,1,0,0,0,0].map(x=>`<span class="${x?"mesh":""}" style="width:20px;height:20px;border-radius:10px;${x?"":"background:var(--chip)"}"></span>`).join("")}</div></div>
+  ${[["Tue, Oct 20","If we could teleport anywhere tonight, where?",1],["Mon, Oct 19","What’s a song that reminds you of me?",1],["Sun, Oct 18","What’s one thing you want us to try this year?",1],["Sat, Oct 17","Describe our first date in three words",0],["Fri, Oct 16","What do you miss most when we’re apart?",1]].map(([d,q,b])=>`<div class="card row between g10" style="padding:14px 14px 14px 16px;border-radius:20px"><div class="col g6" style="min-width:0"><span class="t-grey" style="font-size:12px">${d}</span><b style="font-weight:500;font-size:15px;line-height:1.3">${q}</b></div><span class="row" style="flex:none"><span style="opacity:${b?1:.25}">${av("evan",26)}</span><span style="margin-left:-8px">${av("leona",26)}</span></span></div>`).join("")}</div>${hind}</div>`;
+V.map = () => `<div class="scr" style="overflow:hidden">${sb()}<div style="position:absolute;inset:0;background:url(${IMG("map")}) center/cover;filter:brightness(.62) saturate(.35) contrast(1.1)"></div><div style="position:absolute;inset:0;background:linear-gradient(180deg,#000c,#0005 18%,#0005 62%,#000e 85%)"></div>
+  <div class="top">${`<button class="circle" style="background:#0009" data-act="back" aria-label="Back">${I.back}</button>`}<span class="chip" style="position:absolute;left:50%;transform:translateX(-50%);background:#000;font-weight:600;font-size:14px;padding:9px 14px">${S.evanPaused?"Evan paused sharing":"1.2 km apart"}</span></div>
+  ${S.evanPaused?`<span style="position:absolute;left:236px;top:196px;opacity:.35">${av("evan",52)}</span><span class="chip" style="position:absolute;left:244px;top:262px;background:#000;color:var(--grey);font-size:12px;padding:4px 9px">3h ago</span>`:`<svg style="position:absolute;left:120px;top:240px" width="150" height="170" viewBox="0 0 150 170" fill="none"><defs><linearGradient id="rt" x1="0" y1="170" x2="150" y2="0" gradientUnits="userSpaceOnUse"><stop stop-color="#F08BB0"/><stop offset="1" stop-color="#C77FA3"/></linearGradient></defs><path d="M4 166C45 94 90 76 146 4" stroke="url(#rt)" stroke-width="3" stroke-dasharray="2 8" stroke-linecap="round"/></svg><span style="position:absolute;left:236px;top:196px">${av("evan",52,"ev")}</span>`}
+  <span style="position:absolute;left:74px;top:380px">${av("leona",52,"me")}</span>
+  <div class="card col g12" style="position:absolute;left:12px;right:12px;bottom:30px;padding:18px;border-radius:28px">
+    <div class="row between"><div class="row g12">${av("evan",40)}<div class="col"><b style="font-weight:500">${S.evanPaused?"Evan paused location":"Evan · Santa Croce"}</b><span class="t-grey" style="font-size:13px">${S.evanPaused?"last seen Santa Croce · 3h ago":"updated 2 min ago"}</span></div></div>${S.evanPaused?`<button class="chip" data-act="toast:Asked Evan to share again 👋">Ask 👋</button>`:`<span class="t-grey" style="font-size:13px">🔋 64%</span>`}</div>
+    <div style="height:1px;background:var(--line)"></div>
+    <div class="row between"><div class="row g12">${av("leona",40)}<div class="col"><b style="font-weight:500">You · Duomo</b><span class="t-grey" style="font-size:13px">${S.shareLoc?"sharing location":"location paused"}</span></div></div><span class="t-grey" style="font-size:13px">🔋 88%</span></div></div>${hind}</div>`;
+V.statusbg = () => { const d = S.draft; const thumbs = BG[d.cat];
+  return `<div class="scr" style="overflow:hidden">${sb()}<div class="top"><button class="circle" data-act="back" aria-label="Close">${I.x}</button><button class="chip mesh" data-act="setstatus" style="padding:12px 18px;border-radius:22px;font-size:15px;font-weight:600">Set status</button></div>
+  <div style="position:absolute;left:16px;right:16px;top:110px;height:372px;border-radius:32px;overflow:hidden;${d.bg&&d.bg!=="photo"?`background:url(${IMG(d.bg)}) center/cover`:d.bg==="photo"?`background:url(${IMG("leona")}) center/cover`:"background:var(--surf)"}">
+   <div style="position:absolute;inset:0;background:linear-gradient(180deg,#0004,#0002 45%,#0009)"></div><span class="chip" style="position:absolute;left:14px;top:14px;background:#0008;font-size:12px">You · 10:38 pm</span>
+   <div class="col" style="position:absolute;inset:0;align-items:center;justify-content:center"><span style="font-size:64px">${d.e}</span><b style="font-size:24px;font-weight:600;text-shadow:0 2px 10px #0008">${d.l}</b></div></div>
+  <div class="t-grey" style="position:absolute;left:0;right:0;top:494px;text-align:center;font-size:13px">Shows on Evan’s widget & Home · clears in 24h</div>
+  <div class="sheet" style="top:528px;padding:22px 0 30px;animation:none"><b style="font-weight:600;font-size:17px;padding:0 18px">Background</b>
+   <div class="row g8" style="padding:12px 18px;overflow-x:auto;scrollbar-width:none">${Object.keys(BG).map(c=>`<button class="chip" data-act="cat:${c}" style="flex:none;${d.cat===c?"background:var(--act)":"color:var(--grey);font-weight:400"}">${c}</button>`).join("")}</div>
+   <div class="row g10" style="padding:6px 18px;overflow-x:auto;scrollbar-width:none">${[["none","None"],["photo","Photo"],...thumbs.map(t=>[t,BG_LABEL[t]])].map(([k,l])=>{const on=(d.bg||"none")===k; return `<button data-act="bg:${k}" class="col g6" style="flex:none;align-items:center"><span style="width:84px;height:112px;border-radius:18px;position:relative;${k==="none"?"background:var(--chip)":k==="photo"?"background:var(--chip)":`background:url(${IMG(k)}) center/cover`};display:flex;align-items:center;justify-content:center;color:var(--grey);font-size:18px">${k==="none"?"Aa":k==="photo"?I.camera:""}${on?'<span class="gborder" style="padding:3px;border-radius:18px"></span>':""}</span><span style="font-size:11px;color:${on?"#fff":"var(--grey)"}">${l}</span></button>`}).join("")}</div></div>${hind}</div>`; };
+V.days = () => `<div class="scr">${sb()}<div class="top">${back()}<span class="title">Special days</span></div>
+  <div class="pad col g12" style="padding-top:116px;padding-bottom:120px"><div class="card" style="padding:18px;position:relative"><div class="t-grey" style="font-size:13px">${S.who==="friend"?"Friends":"Together"} since May 20, 2025</div><div style="margin-top:6px"><span class="num" style="font-size:40px">520</span> <b style="font-weight:500">days</b></div><span class="chip" style="position:absolute;right:18px;top:16px;font-size:11px;font-weight:400;color:var(--grey);padding:4px 9px">Pinned on Home</span><div style="height:4px;border-radius:2px;background:var(--chip);margin-top:14px"><div style="width:96%;height:100%;border-radius:2px;background:var(--sun)"></div></div><div class="t-grey" style="font-size:12px;margin-top:8px">1 year in 12 days</div></div>
+  <div class="list">${S.days.map(([e,n,d,inn])=>`<div class="li" style="min-height:68px"><span class="row g12"><span style="width:40px;height:40px;border-radius:20px;background:var(--chip);display:flex;align-items:center;justify-content:center;font-size:20px">${e}</span><span class="col"><b style="font-weight:500;font-size:15px">${esc(n)}</b><span class="t-grey" style="font-size:12px">${d}</span></span></span><span class="col" style="align-items:flex-end"><span class="num" style="font-size:18px">${inn}</span><span class="t-grey" style="font-size:11px">days</span></span></div>`).join("")}</div></div>
+  <div class="foot">${mesh("+ Add a day","go:addday")}</div>${hind}</div>`;
+V.addday = () => { const n = S.newDay; return `<div class="scr">${sb()}<div class="top">${back()}<span class="title">New day</span></div>
+  <div class="pad col g12" style="padding-top:116px;padding-bottom:120px"><div class="row g10">${["✈️","🎉","🎂","💍","🏠","🎬"].map(e=>`<button data-act="nde:${e}" style="width:48px;height:48px;border-radius:24px;font-size:22px;position:relative;background:${n.e===e?"var(--act)":"var(--surf)"}">${e}${n.e===e?'<span class="gborder" style="padding:2px"></span>':""}</button>`).join("")}</div>
+  <input class="field" id="ndname" placeholder="Next time we meet" value="${esc(n.n)}" aria-label="Name">
+  <input class="field" type="date" id="nddate" value="${n.d}" style="color-scheme:dark" aria-label="Date">
+  <div class="list"><div class="li">Repeat every year ${tgl(S.ndRepeat,"ndRepeat")}</div><div class="li">Remind us 3 days before ${tgl(S.ndRemind!==false,"ndRemind")}</div><div class="li">Show countdown on Home ${tgl(S.ndHome!==false,"ndHome")}</div></div></div>
+  <div class="foot">${mesh("Save","saveday")}</div>${hind}</div>`; };
+
+/* ---- me ---- */
+const proTag = `<span class="pro">PRO</span>`;
+V.me = () => { const c = S.connected;
+  const wrow = [["photo","Photo",false],["status","Status",false],["couple","Both photos",true],["distance","Distance",true]];
+  return `<div class="scr">${sb()}<div class="pad col" style="gap:24px;padding-top:56px;padding-bottom:150px">
+  <div style="position:relative"><div style="position:absolute;left:50%;top:0;width:250px;height:110px;transform:translateX(-50%);border-radius:50%;background:var(--sun);opacity:${c?.28:.16};filter:blur(46px)"></div>
+   <div class="row" style="justify-content:center;gap:12px;position:relative">
+    <button class="col g6" data-act="toast:Edit your name & photo" style="align-items:center;position:relative">${av("leona",80,"me")}<span style="position:absolute;right:-2px;top:58px;width:28px;height:28px;border-radius:14px;background:var(--chip);box-shadow:0 0 0 3px #000;display:flex;align-items:center;justify-content:center">${I.pencil}</span><b style="font-weight:500">${esc(S.name)}</b></button>
+    <span style="margin-top:-20px;opacity:${c?1:.35}">${I.gheart(22)}</span>
+    ${c?`<button class="col g6" data-act="go:partner" style="align-items:center">${av("evan",80,"ev")}<b style="font-weight:500">Evan</b></button>`
+       :`<button class="col g6" data-act="go:invite" style="align-items:center;position:relative"><span style="width:92px;height:92px;border-radius:46px;border:2px dashed #7A4BB0;display:flex;align-items:center;justify-content:center;background:var(--surf)">${I.plus("#9C92A6",24)}</span><span style="position:absolute;right:-2px;top:64px;width:28px;height:28px;border-radius:14px;background:var(--pink);box-shadow:0 0 0 3px #000;display:flex;align-items:center;justify-content:center">${I.plus()}</span><b style="font-weight:500;color:var(--grey)">Invite</b></button>`}
+   </div></div>
+  <button class="card row between" data-act="${S.pro?"toast:Opens your subscription settings":"go:paywall"}" style="padding:14px 14px 14px 16px;text-align:left;position:relative">${S.pro?'<span class="gborder" style="padding:1.5px;border-radius:24px"></span>':""}<span class="col"><span class="row g8"><span class="pro" style="font-size:11px">PRO</span><b style="font-weight:500;font-size:17px">Couple Plan</b></span><span class="t-grey" style="font-size:12px;margin-top:3px">${S.pro?"Active · renews Nov 21, 2026":"One pays, both get Pro"}</span></span><span class="chip" style="${S.pro?"":"background:#fff;color:#000"};padding:9px 14px">${S.pro?"Manage":"Try free"}</span></button>
+  <div><div class="row between" style="padding:0 6px 10px"><b style="font-weight:500;font-size:17px">Widgets</b><button class="t-grey" style="font-size:13px" data-act="${c?"sheet:widgetguide":"go:invite"}">${c?"How to add →":"After you connect"}</button></div>
+   <div class="row g12" style="overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:0 16px;opacity:${c?1:.35}">${wrow.map(([k,l,p])=>`<button class="col g8" data-act="${p&&!S.pro?"paywall:3":"homescreen"}" style="align-items:center;flex:none">${W[k](120)}<span class="row g6 t-grey" style="font-size:12px">${l}${p&&!S.pro?proTag:""}</span></button>`).join("")}</div></div>
+  <div class="list"><button class="li" data-act="go:days">Special days <span class="v">Nov 2 ${I.chev}</span></button><button class="li" data-act="toast:Quiz reminder set for 8:00 pm">Quiz reminder <span class="v">8:00 pm ${I.chev}</span></button><div class="li">Share my location ${tgl(S.shareLoc,"shareLoc")}</div><button class="li" data-act="go:settings">Account & privacy <span class="v">${I.chev}</span></button><button class="li" data-act="go:settings">Settings <span class="v">${I.chev}</span></button></div>
+  </div>${nav("me")}${hind}</div>`; };
+V.partner = () => `<div class="scr">${sb()}<div class="top">${back()}<span class="title">Your person</span></div>
+  <div class="pad col g12" style="padding-top:112px;padding-bottom:40px;align-items:center">${av("evan",88,"ev")}<b style="font-size:22px;font-weight:600">Evan</b><span class="t-grey" style="font-size:13px;margin-top:-6px">@evan.lee · connected Oct 2</span>
+  <div class="list" style="width:100%;margin-top:6px"><button class="li" data-act="go:days">Together since <span class="v">May 20, 2025 ${I.chev}</span></button></div>
+  <div class="t-grey" style="align-self:flex-start;font-size:12px;letter-spacing:.08em;margin:8px 0 -4px 14px">WHAT EVAN CAN SEE</div>
+  <div class="list" style="width:100%"><div class="li">My location ${tgl(S.shareLoc,"shareLoc")}</div><div class="li">My battery ${tgl(S.shareBat!==false,"shareBat")}</div><div class="li">Let Evan nudge me ${tgl(S.nudge!==false,"nudge")}</div></div>
+  <div class="list" style="width:100%"><button class="li" data-act="askunlink" style="color:var(--red);font-weight:500">Unlink from Evan</button></div></div>${hind}</div>`;
+V.settings = () => `<div class="scr">${sb()}<div class="top">${back()}<span class="title">Settings</span></div>
+  <div class="pad col g12" style="padding-top:112px"><div class="list">${[["Notifications",""],["Appearance","Follows system"],["Language","English"],["Help & feedback",""],["About","v1.0"]].map(([a,b])=>`<button class="li" data-act="toast:${a}">${a} <span class="v">${b} ${I.chev}</span></button>`).join("")}</div>
+  <div class="list"><button class="li" data-act="reset" style="color:var(--red)">Log out (restarts the demo)</button></div></div>${hind}</div>`;
+V.paywall = () => { const slides = [["Your whole Log, forever","Free keeps 30 days. Pro keeps every snap, answer and same moment."],["Every status background","Pick any background for your status — cafés, beaches, or your own photos"],["Deep-talk Quiz packs","Spicy, long-distance and “who knows who better” packs, new every month."],["Both photos & Distance widgets","Your two latest snaps side by side, and how far apart you are — on your home screen."],["Arrival alerts","Know when Evan lands, gets home or gets to work."]];
+  const [h,d] = slides[S.slide];
+  const art = S.slide===1?`<div style="position:relative;height:270px"><div style="position:absolute;left:38px;top:40px;width:300px;height:180px;border-radius:50%;background:var(--sun);opacity:.28;filter:blur(60px)"></div>${[["beach",22,54,120,160,8,"🏖️","Beach day"],["home",236,50,120,160,-8,"🥺","Missing you"],["cafe",112,18,152,210,0,"☕️","At a café"]].map(([i,x,y,w,hh,r,e,l])=>`<div class="w" style="position:absolute;left:${x}px;top:${y}px;width:${w}px;height:${hh}px;transform:rotate(${r}deg);background-image:url(${IMG(i)});${i==="cafe"?"box-shadow:0 12px 30px #0008;z-index:2":""}"><div style="position:absolute;inset:0;background:linear-gradient(180deg,#0002 40%,#0009)"></div><div class="col" style="position:absolute;inset:0;align-items:center;justify-content:center"><span style="font-size:${w/4.2}px">${e}</span><b style="font-size:${w/11}px">${l}</b></div></div>`).join("")}<span class="chip mesh" style="position:absolute;left:246px;top:214px;z-index:3;font-size:12px;padding:5px 10px">40+ scenes</span></div>`
+   : S.slide===3?`<div style="height:270px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;position:relative"><div style="position:absolute;width:300px;height:180px;border-radius:50%;background:var(--sun);opacity:.25;filter:blur(60px)"></div><div style="position:relative">${W.couple(110)}</div><div style="position:relative">${W.distance(110)}</div></div>`
+   : `<div style="height:270px;display:flex;align-items:center;justify-content:center;position:relative"><div style="position:absolute;width:300px;height:180px;border-radius:50%;background:var(--sun);opacity:.25;filter:blur(60px)"></div><span style="font-size:96px;position:relative">${["🗓️","","💬","","📍"][S.slide]}</span></div>`;
+  return `<div class="scr">${sb()}<div class="top"><button class="circle" data-act="paywallclose" aria-label="Close">${I.x}</button><button class="t-grey" style="text-decoration:underline;font-size:15px" data-act="toast:Nothing to restore yet">Restore</button></div>
+  <div style="padding-top:104px">${art}</div>
+  <div class="pad col g8" style="align-items:center;margin-top:8px"><div class="h1">${S.slide===1?"Unlock everything":h}</div><div class="sub" style="max-width:320px;min-height:44px">${d}</div>
+   <div class="row g6" style="margin-top:6px">${slides.map((_,i)=>`<button data-act="slide:${i}" aria-label="Slide ${i+1}" style="width:${i===S.slide?22:6}px;height:6px;border-radius:3px;background:${i===S.slide?"var(--sun)":"#ffffff40"}"></button>`).join("")}</div></div>
+  <div class="pad col g12" style="margin-top:18px;padding-bottom:110px">
+   <button data-act="plan:yearly" style="border-radius:24px;overflow:hidden;background:var(--surf);position:relative;text-align:left">${S.plan==="yearly"?'<span class="gborder" style="padding:2px"></span>':""}<div class="mesh row g6" style="justify-content:center;height:38px;font-weight:600;font-size:14px">${av("leona",20)}<span style="margin-left:-12px">${av("evan",20)}</span> One person buys, both get Pro</div>
+    <div class="row between" style="padding:14px 18px 16px"><div class="col g6"><span class="row g8"><b style="font-size:20px;font-weight:600">Yearly</b><span style="background:linear-gradient(90deg,#F08BB0,#F6A06A);color:var(--ink);font-weight:600;font-size:12px;border-radius:12px;padding:3px 9px">Save 63%</span></span><span class="t-grey" style="font-size:13px">Only $34.99/year · 7 days free</span></div><b style="font-size:18px;font-weight:600">$2.92/mo</b></div></button>
+   <button data-act="plan:monthly" class="row between" style="border-radius:22px;background:var(--surf);padding:20px 18px;position:relative">${S.plan==="monthly"?'<span class="gborder" style="padding:2px"></span>':""}<b style="font-size:18px;font-weight:600">Monthly</b><b style="font-size:18px;font-weight:600;color:${S.plan==="monthly"?"#fff":"var(--grey)"}">$7.99/mo</b></button></div>
+  <div class="foot" style="bottom:22px">${mesh(S.plan==="yearly"?"Start 7-day free trial":"Subscribe · $7.99/mo","buy")}<div class="t-grey" style="text-align:center;font-size:11px">Covers you and Evan · cancel anytime · Terms · Privacy</div></div>${hind}</div>`; };
+V.homescreen = () => `<div class="scr" style="background:url(${IMG("wall")}) center/cover">${sb()}<div style="position:absolute;inset:0;background:#0004"></div>
+  <div style="position:relative;padding:64px 18px 0;display:grid;grid-template-columns:158px 158px;gap:24px 21px">
+   <button style="grid-column:1/3" data-act="tab:log" class="col g6">${W.couple(158)}<span style="font-size:11px;font-weight:500">Both photos</span></button>
+   <button data-act="tab:log" class="col g6">${W.photo(158)}<span style="font-size:11px;font-weight:500">Photo</span></button>
+   <button data-act="tab:home" class="col g6">${W.status(158)}<span style="font-size:11px;font-weight:500">Status</span></button>
+   <button data-act="go:map" class="col g6">${W.distance(158)}<span style="font-size:11px;font-weight:500">Distance</span></button>
+   <div style="display:grid;grid-template-columns:62px 62px;gap:22px 20px;padding:2px 8px">${[["#2B2531","Camera"],["#F08BB0","Photos"],["#000","LinkTwo"],["#5B2E7A","Music"]].map(([c,n])=>`<button class="col g6" style="align-items:center" ${n==="LinkTwo"?'data-act="tab:home"':""}><span style="width:62px;height:62px;border-radius:15px;background:${c};display:flex;align-items:center;justify-content:center">${n==="LinkTwo"?I.gheart(32):""}</span><span style="font-size:11px">${n}</span></button>`).join("")}</div></div>
+  <div style="position:absolute;left:16px;right:16px;bottom:24px;height:86px;border-radius:30px;background:#ffffff2e;backdrop-filter:blur(30px);display:flex;justify-content:space-around;align-items:center">${["#34C759","#0A84FF","#FF9F0A","#2B2531"].map(c=>`<span style="width:62px;height:62px;border-radius:15px;background:${c}"></span>`).join("")}</div>${hind}</div>`;
+
+/* ---------- sheets / overlays ---------- */
+function sheetHTML(){ const s = S.sheet; if(!s && !S.unlinkAsk && !S.deleteAsk && !S.success) return "";
+  if (S.success) return `<div class="scrim"></div><div class="card col g12" style="position:absolute;left:24px;right:24px;top:220px;z-index:72;padding:32px 24px;align-items:center;border-radius:32px;animation:in .25s"><span class="mesh num" style="width:96px;height:96px;border-radius:48px;display:flex;align-items:center;justify-content:center;font-size:22px">PRO</span><b style="font-size:24px;font-weight:600">You’re both Pro 🎉</b><div class="sub" style="font-size:14px">Evan got Pro too — we just let him know. Thanks for supporting us.</div>${mesh("Done","successdone")}</div>`;
+  if (S.unlinkAsk) return `<div class="scrim" data-act="closeask"></div><div class="sheet col g12"><b style="font-size:22px;font-weight:600">Unlink from Evan?</b><div class="t-grey" style="font-size:14px;line-height:1.45">You’ll both stop seeing new snaps, status and location. Your past Log, Quiz answers and special days stay with each of you.</div><button class="btn" style="background:var(--red);margin-top:8px" data-act="unlink">Unlink</button><button class="btn plain" data-act="closeask">Cancel</button></div>`;
+  if (S.deleteAsk) return `<div class="scrim" data-act="closeask"></div><div class="sheet col g12"><b style="font-size:22px;font-weight:600">Delete this snap?</b><div class="t-grey" style="font-size:14px;line-height:1.45">It disappears from your Log and Evan’s. Their widget goes back to your previous photo.</div><button class="btn" style="background:var(--red);margin-top:8px" data-act="deletepost">Delete</button><button class="btn plain" data-act="closeask">Cancel</button></div>`;
+  if (s === "status") return `<div class="scrim" data-act="closesheet"></div><div class="sheet" style="height:590px"><b style="font-size:22px;font-weight:600">Your status</b><div class="t-grey" style="font-size:13px;margin-top:4px">Shows on Evan’s widget · clears in 24h</div>
+   <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px">${STATUSES.map(([e,l])=>{const on=S.draft.l===l;return `<button data-act="pick:${e}|${l}" class="col" style="height:78px;border-radius:22px;background:${on?"var(--act)":"var(--chip)"};align-items:center;justify-content:center;gap:4px;position:relative">${on?'<span class="gborder" style="padding:2px;border-radius:22px"></span>':""}<span style="font-size:26px">${e}</span><span style="font-size:11px;color:${on?"#fff":"var(--grey)"}">${l}</span></button>`}).join("")}</div>
+   <input class="field" id="snote" placeholder="Add a note (optional)" style="margin-top:14px;font-size:15px;padding:14px 16px;background:var(--chip)" aria-label="Note">
+   <div style="position:absolute;left:18px;right:18px;bottom:34px">${mesh("Next","go:statusbg")}</div></div>`;
+  if (s === "evan") return `<div class="scrim" data-act="closesheet"></div><div class="sheet col g12"><div class="row g12">${av("evan",56,"ev")}<div class="col"><b style="font-size:20px;font-weight:600">Evan</b><span class="t-grey" style="font-size:13px">🇺🇸 10:24 am · 🔋 64%</span></div></div>
+   <div class="row g12" style="border-radius:22px;padding:16px 18px;background:url(${IMG("cafe")}) center/cover;position:relative;overflow:hidden"><span style="position:absolute;inset:0;background:#0007"></span><span style="font-size:40px;position:relative">☕️</span><span class="col" style="position:relative"><b style="font-size:22px;font-weight:600">At a café</b><span style="font-size:13px;opacity:.8">since 10:02 am</span></span></div>
+   <div class="t-grey" style="font-size:13px;margin-top:6px">Send Evan a little something</div><div class="row g8">${["❤️ Love","👋 Hi","🥺 Miss you","☕️ Me too"].map(t=>`<button class="chip" data-act="quicksend:${t}" style="padding:10px 12px;font-size:14px">${t}</button>`).join("")}</div></div>`;
+  if (s === "widgetguide") return `<div class="scrim" data-act="closesheet"></div><div class="sheet col g12"><b style="font-size:22px;font-weight:600">Evan, on your home screen</b><div class="t-grey" style="font-size:13px;margin-top:-6px">Their latest photo & status, one glance away</div>
+   <div class="row g10" style="margin:6px 0">${W.photo(96)}${W.status(96)}<div style="position:relative">${W.distance(96)}<span class="pro" style="position:absolute;right:6px;top:6px">PRO</span></div></div>
+   ${["Touch and hold an empty spot on your home screen","Tap  +  in the top-left corner","Search for LinkTwo and pick a size"].map((t,i)=>`<div class="row g12" style="font-size:15px"><span style="width:28px;height:28px;border-radius:14px;background:var(--chip);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex:none">${i+1}</span>${t}</div>`).join("")}
+   <div style="margin-top:10px">${mesh("Got it","widgetgot")}</div><button class="link" data-act="homescreen-from-sheet">See how it looks ›</button></div>`;
+  return ""; }
+function overlays(){ let h = sheetHTML();
+  if (S.toast) h += `<div class="toast"><span class="ok">✓</span>${S.toast}</div>`;
+  if (S.push) h += `<button class="push" data-act="openpush"><span class="appicon">${I.gheart(22)}</span><span class="col" style="flex:1;min-width:0"><b style="font-weight:600;font-size:15px">Evan just snapped ☕</b><span style="font-size:13px;opacity:.8">Snap back within 10 min to make a same moment</span></span><span style="width:46px;height:60px;border-radius:10px;background:url(${IMG("evan")}) center/cover;flex:none"></span></button>`;
+  return h; }
+
+/* ---------- render ---------- */
+function screenKey(){ const t = top_(); return t === "app" ? S.tab : t; }
+function render(){ const k = screenKey(); const fn = V[k] || V.home; phone.innerHTML = fn() + overlays(); bindInputs(); }
+function esc(s){ return String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+let toastT;
+function toast(msg){ S.toast = msg; render(); clearTimeout(toastT); toastT = setTimeout(()=>{ S.toast = null; render(); }, 2200); }
+function go(k){ S.sheet = null; S.stack.push(k); render(); phone.querySelector(".scr") && (phone.querySelector(".scr").scrollTop = 0); }
+function goBack(){ S.sheet = null; if (S.stack.length > 1) S.stack.pop(); render(); }
+function toApp(tab){ S.sheet = null; S.stack = ["app"]; S.tab = tab; S.camState = null; render(); }
+
+function bindInputs(){
+  const on = (id, f) => { const el = document.getElementById(id); if (el) el.addEventListener("input", e => f(e.target.value, e.target)); };
+  on("obname", v => S.obName = v);
+  on("caption", v => S.caption = v);
+  on("qans", v => { S.quiz.mine = v; const c = document.getElementById("qcount"); if (c) c.textContent = `${v.length} / 200`; const b = document.getElementById("qsendbtn"); if (b) b.disabled = !v.trim(); });
+  on("ndname", v => S.newDay.n = v); on("nddate", v => S.newDay.d = v);
+  on("snote", v => S.draft.note = v);
+  on("codein", (v, el) => { S.code = v.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0,6); render(); const n = document.getElementById("codein"); if (n){ n.focus(); n.setSelectionRange(9,9); } });
+}
+
+function pop(btn, emoji){
+  const pr = phone.getBoundingClientRect(), r = btn.getBoundingClientRect(), k = pr.width / 375;
+  const x = (r.left - pr.left) / k + r.width / k / 2, y = (r.top - pr.top) / k + r.height / k / 2;
+  const f = document.createElement("div"); f.className = "flyer"; f.textContent = emoji; f.style.left = (x - 26) + "px"; f.style.top = (y - 30) + "px"; phone.appendChild(f);
+  [["💗",-46,-250,.05],["✨",34,-300,.09],["❤️",78,-210,.12],["💕",-8,-330,.15]].forEach(([c,dx,dy,d]) => { const s = document.createElement("div"); s.className = "spark"; s.textContent = c; s.style.left = (x - 9) + "px"; s.style.top = (y - 12) + "px"; s.style.setProperty("--dx", dx + "px"); s.style.setProperty("--dy", dy + "px"); s.style.animationDelay = d + "s"; s.style.opacity = 0; phone.appendChild(s); setTimeout(() => s.remove(), 1000); });
+  setTimeout(() => { f.remove(); }, 1650);
+}
+
+let cdT;
+function startCountdown(){ clearInterval(cdT); cdT = setInterval(() => { const el = document.getElementById("countdown"); const secs = Math.max(0, Math.round((S.replyEnds - Date.now())/1000)); if (secs <= 0){ S.reply = false; clearInterval(cdT); if (screenKey()==="camera") render(); return; } if (el) el.textContent = `Snapping back to Evan · ${Math.floor(secs/60)}:${String(secs%60).padStart(2,"0")}`; }, 1000); }
+
+const A = {
+  back: goBack, close: goBack,
+  obname(){ S.name = S.obName.trim() || "Leona"; go("ob-photo"); },
+  copy(btn){ try { navigator.clipboard.writeText("K7Q2M9").then(()=>toast("Code copied"), ()=>toast("Code: K7Q 2M9")); } catch(e){ toast("Code: K7Q 2M9"); } },
+  fillcode(){ S.code = "EV4N2X"; render(); },
+  connect(){ S.connected = true; S.code = ""; S.stack = ["connected"]; render(); },
+  shutter(){ S.camState = "preview"; render(); setTimeout(()=>{ const c = document.getElementById("caption"); c && c.focus(); }, 50); },
+  retake(){ S.camState = null; S.caption = ""; render(); },
+  flip(){ S.flip = !S.flip; render(); },
+  send(){ const same = S.reply; S.myPost = { t: same ? "22:31" : "22:24", c: S.caption.trim(), same, reacted:false }; S.caption = ""; S.camState = null; S.reply = false; clearInterval(cdT);
+    S.stack = ["app"]; S.tab = "camera"; toast(same ? "Same moment ✦ sent to Evan’s widget" : "Sent to Evan’s widget");
+    setTimeout(()=>{ if (S.myPost) { S.myPost.reacted = true; if (screenKey()==="log" || screenKey()==="photo-me") render(); } }, 6000); },
+  snapback(){ S.reply = true; S.replyEnds = Date.now() + 9*60*1000 + 12000; S.push = false; toApp("camera"); startCountdown(); },
+  openpush(){ A.snapback(); },
+  askdelete(){ S.deleteAsk = true; render(); },
+  deletepost(){ S.deleteAsk = false; S.myPost = null; S.stack = ["app"]; S.tab = "log"; toast("Snap deleted"); },
+  closeask(){ S.deleteAsk = false; S.unlinkAsk = false; render(); },
+  askunlink(){ S.unlinkAsk = true; render(); },
+  unlink(){ S.unlinkAsk = false; S.connected = false; S.stack = ["app"]; S.tab = "me"; toast("Unlinked from Evan"); },
+  shuffle(){ if (S.quiz.shuffles < 1) return; S.quiz.shuffles--; S.quiz.qi = (S.quiz.qi + 1) % QUESTIONS.length; S.quiz.mine = ""; toast("New question for both of you"); },
+  qphoto(){ S.quiz.photo = !S.quiz.photo; render(); },
+  qsend(){ if (!S.quiz.mine.trim()) return; S.quiz.sent = true; render(); if (!S.quiz.evan) setTimeout(()=>{ S.quiz.evan = true; if (screenKey()==="quiz") render(); toast("Evan answered — see both answers"); }, 3500); },
+  setstatus(){ const d = S.draft; S.status = { e:d.e, l:d.l, bg: d.bg==="none"?null:(d.bg==="photo"?"leona":d.bg) }; S.stack = ["app"]; S.tab = "home"; toast("Status set · Evan’s widget updated"); },
+  saveday(){ const n = S.newDay; const name = n.n.trim() || "Next time we meet"; const dt = new Date(n.d + "T00:00"); const diff = Math.max(1, Math.round((dt - new Date("2026-10-21T00:00"))/86400000));
+    S.days.push([n.e, name, dt.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"}), diff]); S.days.sort((a,b)=>a[3]-b[3]); S.newDay = {e:"✈️",n:"",d:"2026-12-20"}; goBack(); toast("Added — we’ll remind you both"); },
+  widgetAdded(){ S.widgetAdded = true; render(); },
+  widgetgot(){ S.sheet = null; S.widgetAdded = true; if (top_().startsWith("ob-")) go("paywall"); else render(); },
+  "homescreen-from-sheet"(){ S.sheet = null; go("homescreen"); },
+  homescreen(){ go("homescreen"); },
+  buy(){ S.success = true; render(); },
+  successdone(){ S.success = false; S.pro = true; if (S.stack.some(k => k.startsWith("ob-"))) toApp("camera"); else goBack(); },
+  paywallclose(){ if (S.stack.some(k => k.startsWith("ob-"))) toApp("camera"); else goBack(); },
+  closesheet(){ S.sheet = null; render(); },
+  reset(){ S = fresh(); render(); },
+  shareLoc(){ S.shareLoc = !S.shareLoc; render(); },
+  shareBat(){ S.shareBat = S.shareBat === false; render(); }, nudge(){ S.nudge = S.nudge === false; render(); },
+  ndRepeat(){ S.ndRepeat = !S.ndRepeat; render(); }, ndRemind(){ S.ndRemind = S.ndRemind === false; render(); }, ndHome(){ S.ndHome = S.ndHome === false; render(); }
+};
+
+phone.addEventListener("click", e => {
+  const b = e.target.closest("[data-act]"); if (!b || b.disabled) return;
+  const a = b.dataset.act; const [k, v, w] = a.split(":");
+  if (k === "go") return go(v);
+  if (k === "tab") { if (w === "reset") { S.stack = ["app"]; } return toApp(v); }
+  if (k === "sheet") { S.sheet = v; if (v === "status") S.draft = { ...S.draft }; return render(); }
+  if (k === "toast") return toast(a.slice(6));
+  if (k === "who") { S.who = v; return render(); }
+  if (k === "perm") { S["perm" + v] = true; return render(); }
+  if (k === "react") { S.reaction = v; render(); const nb = [...phone.querySelectorAll('[data-act^="react:"]')].find(x => x.dataset.act === a); if (nb){ nb.classList.add("pop"); pop(nb, v); } setTimeout(()=>toast(`Sent ${v} to Evan · it shows on their widget`), 1500); return; }
+  if (k === "qreact") { S.qreact = v; render(); return; }
+  if (k === "past") { S.pastDay = +v; return go("past"); }
+  if (k === "pick") { const [e2, l2] = a.slice(5).split("|"); S.draft.e = e2; S.draft.l = l2; return render(); }
+  if (k === "cat") { S.draft.cat = v; return render(); }
+  if (k === "bg") { S.draft.bg = v; return render(); }
+  if (k === "nde") { S.newDay.e = v; return render(); }
+  if (k === "slide") { S.slide = +v; return render(); }
+  if (k === "plan") { S.plan = v; return render(); }
+  if (k === "paywall") { S.slide = +v; return go("paywall"); }
+  if (k === "quicksend") { S.sheet = null; return toast(`Sent “${v}” to Evan`); }
+  if (A[a]) return A[a](b);
+});
+document.addEventListener("click", e => {
+  const j = e.target.closest("[data-jump]"); if (j) { const t = j.dataset.jump; S.sheet = null; S.success = false;
+    if (t.startsWith("ob-")) { S.stack = [t]; render(); }
+    else if (TABS.includes(t)) { S.camState = null; toApp(t); }
+    else { S.stack = ["app", t]; if (t === "paywall") S.slide = 1; render(); } return; }
+  const s = e.target.closest("[data-sim]"); if (!s) return; const m = s.dataset.sim;
+  if (m === "snap") { if (top_().startsWith("ob-")) { S.stack = ["app"]; S.tab = "home"; } S.push = true; render(); setTimeout(()=>{ if (S.push){ S.push = false; render(); } }, 7000); }
+  if (m === "answer") { S.quiz.evan = true; if (top_().startsWith("ob-")) S.stack = ["app"]; render(); toast("Evan answered today’s question"); }
+  if (m === "pause") { S.evanPaused = !S.evanPaused; render(); toast(S.evanPaused ? "Evan paused location sharing" : "Evan is sharing location again"); }
+  if (m === "anniv") { S.anniv = !S.anniv; toApp("home"); }
+  if (m === "reset") { S = fresh(); render(); }
+});
+
+/* fit phone to viewport */
+function fit(){ const stage = $("#stage"), sc = $("#scaler"); const availW = Math.min(window.innerWidth - 32, 420); const availH = window.innerHeight - 48;
+  const k = Math.min(1, availW / 395, availH / 832); sc.style.transform = `scale(${k})`; stage.style.width = (395 * k) + "px"; stage.style.height = (832 * k) + "px"; sc.style.padding = "10px"; sc.style.width = "395px"; }
+window.addEventListener("resize", fit); fit(); render();
+</script>
