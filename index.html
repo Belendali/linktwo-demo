@@ -44,7 +44,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 .legend{font-size:12px;color:var(--grey);margin-top:18px;line-height:1.6;max-width:46ch}
 .stage{position:relative}
 .scaler{transform-origin:top center}
-.phone{width:375px;height:812px;border-radius:48px;background:var(--bg);position:relative;overflow:hidden;
+.phone{width:375px;height:812px;border-radius:48px;background:var(--bg);position:relative;overflow:hidden;overflow:clip;
   box-shadow:0 0 0 10px #1a171d,0 0 0 11px #2c2830,0 40px 80px -20px #000;}
 @media (max-width:860px){.page{grid-template-columns:1fr}.brief{padding-top:0}.brief h1{font-size:34px}.stage{justify-self:center}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -624,6 +624,8 @@ document.addEventListener("click", e => {
 /* fit phone to viewport */
 function fit(){ const stage = $("#stage"), sc = $("#scaler"); const availW = Math.min(window.innerWidth - 32, 420); const availH = window.innerHeight - 48;
   const k = Math.min(1, availW / 395, availH / 832); sc.style.transform = `scale(${k})`; stage.style.width = (395 * k) + "px"; stage.style.height = (832 * k) + "px"; sc.style.padding = "10px"; sc.style.width = "395px"; }
+/* the phone frame never scrolls — only the .scr inside it does (focus / sheet animations could otherwise push the tab bar up) */
+phone.addEventListener("scroll", () => { if (phone.scrollTop || phone.scrollLeft) { phone.scrollTop = 0; phone.scrollLeft = 0; } });
 window.addEventListener("resize", fit); fit(); render();
 </script>
 
