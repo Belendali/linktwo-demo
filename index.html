@@ -112,6 +112,7 @@ input.field:focus,textarea.field:focus{outline:none;border-color:#F08BB0}
 .seg{height:58px;border-radius:29px;background:var(--chip);box-shadow:inset 0 0 0 1px #ffffff14;display:flex;padding:5px;gap:2px}
 .seg button{border-radius:24px;padding:0 22px;font-size:18px;color:#A79DB0}
 .seg button.on{background:var(--act);color:#fff;font-weight:500}
+.topfade{position:absolute;left:0;right:0;top:0;height:58px;z-index:29;pointer-events:none;background:linear-gradient(180deg,#000 0%,#000d 55%,transparent)}
 .navfade{position:absolute;left:0;right:0;bottom:0;height:150px;z-index:45;pointer-events:none;background:linear-gradient(180deg,transparent,#000c 45%,#000);backdrop-filter:blur(0px)}
 
 /* home tiles */
@@ -370,7 +371,7 @@ V.home = () => { const Z = S.quiz, q = QUESTIONS[Z.qi][0], st = S.status, both =
       <span class="col" style="position:absolute;inset:0;align-items:center;justify-content:center;padding-top:6px;line-height:1.3"><span style="font-size:20px">${e}</span><b style="font-size:14px;font-weight:600">${l}</b></span>
       <span style="position:absolute;left:12px;bottom:10px;font-size:12px;color:${bg?"#ffffffbf":"var(--grey)"}">🔋 ${ev?"64":"88"}%</span></button>`; };
   return `<div class="scr">${sb()}
-  ${S.widgetAdded?"":`<button data-act="sheet:widgetguide" aria-label="Add a widget" style="position:absolute;left:329px;top:40px;width:34px;height:34px;border-radius:17px;background:var(--chip);box-shadow:0 0 0 3px #000;z-index:41;display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 26 26"><rect x="1" y="1" width="11" height="11" rx="3.5" fill="#fff"/><rect x="14" y="1" width="11" height="11" rx="3.5" fill="#fff" fill-opacity=".45"/><rect x="1" y="14" width="24" height="11" rx="3.5" fill="#fff" fill-opacity=".45"/></svg><span style="position:absolute;right:-1px;top:-1px;width:9px;height:9px;border-radius:5px;background:var(--pink)"></span></button>`}
+  ${S.widgetAdded?"":`<button class="float" data-act="sheet:widgetguide" aria-label="Add a widget" style="position:absolute;left:329px;top:40px;width:34px;height:34px;border-radius:17px;background:var(--chip);box-shadow:0 0 0 3px #000;z-index:41;display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 26 26"><rect x="1" y="1" width="11" height="11" rx="3.5" fill="#fff"/><rect x="14" y="1" width="11" height="11" rx="3.5" fill="#fff" fill-opacity=".45"/><rect x="1" y="14" width="24" height="11" rx="3.5" fill="#fff" fill-opacity=".45"/></svg><span style="position:absolute;right:-1px;top:-1px;width:9px;height:9px;border-radius:5px;background:var(--pink)"></span></button>`}
   <div class="col" style="gap:16px;padding:60px 12px 150px">
   ${anniv}${hero}
   <div class="col" style="gap:10px">
@@ -610,7 +611,13 @@ function overlays(){ let h = sheetHTML();
 
 /* ---------- render ---------- */
 function screenKey(){ const t = top_(); return t === "app" ? S.tab : t; }
-function render(){ const k = screenKey(); const fn = V[k] || V.home; phone.innerHTML = fn() + overlays(); bindInputs(); }
+/* chrome (status bar, top bar, tab bar, bottom buttons, home indicator) floats over the page: lift it out of the scrolling .scr so only content scrolls */
+const CHROME = ":scope > .sb, :scope > .top, :scope > .float, :scope > .navfade, :scope > .nav, :scope > .foot, :scope > .hind";
+function render(){ const k = screenKey(); const fn = V[k] || V.home; phone.innerHTML = fn() + overlays();
+  const scr = phone.querySelector(".scr");
+  if (scr) { let at = scr; scr.querySelectorAll(CHROME).forEach(el => { at.after(el); at = el; });
+    if (scr.scrollHeight > scr.clientHeight + 4) { const f = Object.assign(document.createElement("div"), { className: "topfade" }); if (phone.querySelector(":scope > .top")) f.style.height = "112px"; scr.after(f); } }
+  bindInputs(); }
 function esc(s){ return String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
 let toastT;
 function toast(msg){ S.toast = msg; render(); clearTimeout(toastT); toastT = setTimeout(()=>{ S.toast = null; render(); }, 2200); }
