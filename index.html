@@ -450,7 +450,7 @@ const myHalf = (Z, h) => Z.photo
   : `<div style="position:absolute;left:0;right:0;bottom:0;height:${h}px;background:#ffffff0d;border-top:1px solid #ffffff14"><span class="chip" style="position:absolute;left:12px;top:12px;background:#0006;padding:4px 10px 4px 4px">${av("leona",22)}You</span><span style="position:absolute;left:18px;right:18px;top:52px;font-size:19px;font-weight:600;line-height:1.3">${esc(Z.mine)}</span></div>`;
 
 V.quiz = () => { const Z = S.quiz, [q, evanA] = QUESTIONS[Z.qi], fx = Z.fx || ""; Z.fx = null;
-  const box = `position:absolute;left:16px;right:16px;top:164px;height:478px`;
+  const box = `position:absolute;left:16px;right:16px;top:164px;height:478px;width:auto`;
   /* 06 / 07 — answered: Evan on top (locked until he answers), me below */
   if (Z.sent) { const both = Z.evan;
     return `<div class="scr" style="overflow:hidden">${sb()}${qTop()}
@@ -469,7 +469,7 @@ V.quiz = () => { const Z = S.quiz, [q, evanA] = QUESTIONS[Z.qi], fx = Z.fx || ""
   if (Z.face === "front") { const locked = Z.evan, left = Z.shuffles;
     return `<div class="scr" style="overflow:hidden">${sb()}${qTop()}${qLine(line)}
     <div style="${box};perspective:1400px">
-      <span class="qcard" aria-hidden="true" style="position:absolute;inset:14px -8px -10px 8px;width:auto;opacity:.45;transform:rotate(3deg);background:${cardBg(Z.qi+1)}"></span>
+      <span class="qcard" aria-hidden="true" style="position:absolute;inset:14px -2px -10px 2px;width:auto;opacity:.45;transform:rotate(2deg);background:${cardBg(Z.qi+1)}"></span>
       <button class="qcard ${fx}" data-act="qflip" style="position:absolute;inset:0;background:${cardBg(Z.qi)}">
         <span style="position:absolute;left:22px;top:22px;font-size:13px;color:#ffffffb3">#128 · Wed, Oct 21</span>
         <span style="position:absolute;left:22px;right:22px;top:50%;transform:translateY(-50%);font-size:31px;font-weight:600;line-height:1.2;text-wrap:balance">${q}</span>
@@ -505,7 +505,7 @@ V.ourcards = () => { const Z = S.quiz, both = Z.sent && Z.evan;
 
 V.oldcard = () => { const [d, q, pi, st, ea, ma] = PASTQ[S.oldCard];
   return `<div class="scr" style="overflow:hidden">${sb()}<div class="top">${back()}<span class="title">${d}</span></div>
-  <div class="qcard qback" style="position:absolute;left:16px;right:16px;top:120px;height:520px;background:${backBg(pi)}">${qHead(q,false)}
+  <div class="qcard qback" style="position:absolute;left:16px;right:16px;top:120px;height:520px;width:auto;background:${backBg(pi)}">${qHead(q,false)}
     <div style="position:absolute;left:0;right:0;top:58px;height:220px"><span class="chip" style="position:absolute;left:12px;top:6px;background:#0006;padding:4px 10px 4px 4px">${av("evan",22)}Evan</span><span style="position:absolute;left:18px;right:18px;top:48px;font-size:21px;font-weight:600;line-height:1.3">${ea}</span></div>
     <div style="position:absolute;left:0;right:0;bottom:0;height:242px;background:#ffffff0d;border-top:1px solid #ffffff14"><span class="chip" style="position:absolute;left:12px;top:12px;background:#0006;padding:4px 10px 4px 4px">${av("leona",22)}You</span><span style="position:absolute;left:18px;right:18px;top:52px;font-size:19px;font-weight:600;line-height:1.3">${ma}</span></div></div>
   <div class="t-grey" style="position:absolute;left:0;right:0;top:664px;text-align:center;font-size:13px">Every card keeps its own colour</div>${hind}</div>`; };
