@@ -114,6 +114,18 @@ input.field:focus,textarea.field:focus{outline:none;border-color:#F08BB0}
 .shade>*{position:relative}
 .tile.shade .lab{position:absolute}
 
+/* daily question cards */
+.qcard{position:relative;display:block;width:100%;border-radius:34px;overflow:hidden;isolation:isolate;text-align:left;color:#fff;box-shadow:0 24px 50px -24px #000}
+.qcard::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.3;mix-blend-mode:soft-light;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+.qback{box-shadow:inset 0 0 0 1px #ffffff1f,0 24px 50px -24px #000}
+.flipout{animation:flipout .2s ease-in forwards} @keyframes flipout{to{transform:rotateY(90deg)}}
+.flipin{animation:flipin .26s ease-out} @keyframes flipin{from{transform:rotateY(-90deg)}}
+.swipe{animation:swipe .3s ease-in forwards} @keyframes swipe{to{transform:translate(-120%,-20px) rotate(-14deg);opacity:0}}
+.deal{animation:deal .38s cubic-bezier(.2,.8,.2,1)} @keyframes deal{from{transform:translateY(40px) scale(.92);opacity:0}}
+.reveal{animation:reveal .9s ease} @keyframes reveal{from{filter:blur(12px);opacity:0}}
+.flash{animation:flash .5s ease} @keyframes flash{from{filter:brightness(3)}}
+
 /* log */
 .lcard{position:relative;width:100%;height:276px;border-radius:34px;overflow:hidden;background:var(--surf);display:block;text-align:left}
 .lcard.photo::before{content:"";position:absolute;inset:0;background:#0000004d}
@@ -155,6 +167,7 @@ input.field:focus,textarea.field:focus{outline:none;border-color:#F08BB0}
     <div class="jumps" id="jumps">
       <button data-jump="ob-welcome">Onboarding</button>
       <button data-jump="home">Home</button>
+      <button data-jump="quiz">Daily Question</button>
       <button data-jump="camera">Camera</button>
       <button data-jump="log">Log</button>
       <button data-jump="me">Me</button>
@@ -178,13 +191,27 @@ input.field:focus,textarea.field:focus{outline:none;border-color:#F08BB0}
 const IMG = n => `img/${n}.jpg`;
 const BG = { Everyday:["home","gym","cafe","office"], "Going out":["restaurant","cafe","home"], Outdoors:["beach","park","sunset"], "Around town":["office","restaurant","park"], Special:["sunset","beach","home"] };
 const BG_LABEL = {home:"Home",gym:"Gym",cafe:"Cafe",office:"Office",restaurant:"Restaurant",beach:"Beach",park:"Park",sunset:"Sunset"};
-const QUESTIONS = ["What tiny thing did I do this week that made you smile?","If we could teleport anywhere tonight, where would we go?","What’s a song that reminds you of me?","What do you miss most when we’re apart?"];
+const QUESTIONS = [
+  ["Which song makes you think of me?", "“Yellow” — you sang it off-key in the car in Florence and now it’s ours."],
+  ["What tiny thing did I do this week that made you smile?", "The way you laughed at my terrible joke on FaceTime. I replayed it all day."],
+  ["If we could teleport anywhere tonight, where would we go?", "That tiny pasta place in Santa Croce. Same table, same wine."],
+  ["What do you miss most when we’re apart?", "Your hand finding mine when we walk. Every single time."]];
+/* each card gets its own dark sunset gradient: dusk / ember / indigo / amber / rose */
+const PAL = [["#1E1028","#4A2466","#B0688F","#F2A08A"],["#200E18","#62243F","#C46A6E","#F6C35A"],["#100F24","#33296B","#8466B8","#C77FA3"],["#1C120C","#5E3822","#C08452","#F2A08A"],["#1F0F19","#6E3355","#D88A8E","#F6C35A"]];
+const cardBg = i => { const [a,b,c,d] = PAL[i % PAL.length]; return `radial-gradient(62% 50% at 46% 48%,${a} 0%,${a}d9 35%,transparent 78%),radial-gradient(60% 45% at 100% 100%,${d} 0%,transparent 72%),radial-gradient(70% 55% at 0% 0%,${c}a6 0%,transparent 72%),linear-gradient(150deg,${c} 0%,${b} 50%,${c} 100%)`; };
+const backBg = i => `linear-gradient(180deg,${PAL[i % PAL.length][1]}99 0%,#15101A 55%,#15101A 100%)`;
+const PASTQ = [
+  ["Tue Oct 20","What’s my comfort food on a bad day?",3,"both","Your mom’s tomato egg noodles. Extra scallions, no debate.","Spicy wontons from the place under your old flat 🥟"],
+  ["Mon Oct 19","What made you laugh today?",4,"turn"],
+  ["Sun Oct 18","Which city should we live in for a year?",2,"missed"],
+  ["Sat Oct 17","What are you proud of this year?",0,"both","Finally shipping my app. And not giving up on us across 12 time zones.","Running my first half marathon — you stayed up to watch the tracker 🥹"],
+  ["Fri Oct 16","Where should our next trip be?",1,"both","Lisbon. Pastéis de nata for breakfast, lunch and dinner.","Somewhere with snow and a tiny cabin. Kyoto in winter?"]];
 const STATUSES = [["💻","Working"],["☕️","Coffee"],["🍜","Eating"],["🚇","Commuting"],["🏋️","Gym"],["😴","Sleeping"],["📚","Studying"],["🥺","Missing you"],["🎮","Gaming"],["🛍️","Shopping"],["🍻","Friends"],["✈️","Traveling"]];
 const TABS = ["home","camera","log","me"];
 
 const fresh = () => ({
   stack:["ob-welcome"], name:"Leona", who:"partner", connected:true, pro:false, plan:"yearly", slide:1,
-  quiz:{qi:0, shuffles:2, evan:false, mine:"", photo:false, sent:false},
+  quiz:{qi:0, shuffles:3, evan:false, mine:"", photo:false, sent:false, face:"front", mode:null, nudged:false, streak:14, revealed:false, react:null, fx:null}, oldCard:0,
   status:{e:"💻", l:"Working", bg:null}, draft:{e:"🥺", l:"Missing you", bg:"home", cat:"Everyday"},
   myPost:null, caption:"", reply:false, replyEnds:0, reaction:null,
   shareLoc:true, evanPaused:false, anniv:false, widgetAdded:false, flip:false,
@@ -216,6 +243,10 @@ const I = {
   pencil:`<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"/></svg>`,
   plus:(c="#fff",s=14)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="${c}" stroke-width="2.6" stroke-linecap="round"/></svg>`,
   arrow:`<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  grid:`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="4" y="4" width="6.5" height="6.5" rx="2"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="2"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="2"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="2"/></svg>`,
+  flipS:`<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M20 11a8 8 0 0 0-14.3-4.8M4 13a8 8 0 0 0 14.3 4.8" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><path d="M5.2 2.8v3.8H9M18.8 21.2v-3.8H15" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  newq:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3M19.5 4.5v4.2h-4.2" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  lock:`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9C92A6" stroke-width="2"><rect x="5" y="10.5" width="14" height="10" rx="3"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/></svg>`,
   camera:`<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3.5 8.8A2.6 2.6 0 0 1 6.1 6.2h1.8l1.4-2.1h5.4l1.4 2.1h1.8a2.6 2.6 0 0 1 2.6 2.6v7.9a2.6 2.6 0 0 1-2.6 2.6H6.1a2.6 2.6 0 0 1-2.6-2.6z" stroke="#fff" stroke-width="2"/><circle cx="12" cy="12.7" r="3.3" stroke="#fff" stroke-width="2"/></svg>`
 };
 const back = (x="back") => `<button class="circle" data-act="${x}" aria-label="Back">${x==="close"?I.x:I.back}</button>`;
@@ -313,21 +344,34 @@ const nav = active => `<div class="navfade"></div><div class="nav">
   <div class="seg"><button class="${active==="camera"?"on":""}" data-act="tab:camera">camera</button><button class="${active==="log"?"on":""}" data-act="tab:log">logs</button></div>
   <button class="c" data-act="tab:me" aria-label="Me" style="${active==="me"?"background:#fff":""}">${av("leona",48)}</button></div>`;
 
-V.home = () => { const q = QUESTIONS[S.quiz.qi]; const st = S.status;
-  const anniv = S.anniv ? `<button class="tile mesh" data-act="toast:Share card ready" style="height:108px;padding:16px 18px;color:var(--ink)"><div style="font-size:13px;font-weight:500">Today · Nov 2</div><div><span class="num" style="font-size:32px">1 year</span> <span style="font-weight:500">together 🎉</span></div><div style="font-size:12px;opacity:.8">365 days of you, Evan & ${S.name}</div><span class="chip" style="position:absolute;right:16px;top:16px;background:#000;color:#fff">Share</span></button>`
-   : `<button class="tile" data-act="go:days" style="height:108px;padding:16px 18px"><div class="t-grey" style="font-size:13px">Evan & you</div><div><span class="num" style="font-size:34px">520</span> <span style="font-weight:500">${S.who==="friend"?"days as friends":"days together"}</span></div><div style="position:absolute;right:18px;top:18px;text-align:right"><div style="font-weight:500">1 year</div><div class="t-grey" style="font-size:12px">in 12 days · Nov 2</div></div><div style="position:absolute;left:18px;right:18px;bottom:18px;height:4px;border-radius:2px;background:var(--chip)"><div style="width:96%;height:100%;border-radius:2px;background:var(--sun)"></div></div></button>`;
-  const quizSub = S.quiz.sent && S.quiz.evan ? `<span style="color:#fff">✦ Both answered</span>` : `<span style="color:var(--pink)">#128 · ${S.quiz.sent?"waiting for Evan":"your turn"}</span>`;
-  return `<div class="scr">${sb()}<div class="col g12" style="padding:60px 12px 140px">
-  ${anniv}
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:11px">
-    <button class="tile" data-act="go:quiz" style="height:218px"><div class="lab">Daily Quiz<small>${quizSub}</small></div>${S.quiz.sent&&S.quiz.evan?"":`<span style="position:absolute;right:16px;top:20px;width:8px;height:8px;border-radius:4px;background:var(--pink)"></span>`}<div style="position:absolute;left:16px;right:14px;top:72px;font-weight:600;font-size:16px;line-height:1.35">${q}</div><div class="row g6 t-grey" style="position:absolute;left:16px;bottom:16px;font-size:12px">${av("evan",22)}${S.quiz.evan?"Evan answered":"Not answered yet"}</div></button>
-    <button class="tile bgimg shade" data-act="go:map" style="height:218px;background-image:url(${IMG("map")});filter:saturate(.6)"><div class="lab">Map<small style="color:#ffffffb0">${S.evanPaused?"Evan paused sharing":"Evan · Santa Croce"}</small></div>
-      ${S.evanPaused?"":`<svg style="position:absolute;left:46px;top:92px" width="80" height="70" viewBox="0 0 80 70" fill="none"><path d="M4 66C20 40 55 35 76 4" stroke="#000" stroke-width="2.5" stroke-dasharray="2 6" stroke-linecap="round"/></svg><span style="position:absolute;left:112px;top:76px">${av("evan",30,"ev")}</span>`}<span style="position:absolute;left:30px;top:150px">${av("leona",30,"me")}</span>${S.evanPaused?"":`<span class="chip" style="position:absolute;left:74px;top:124px;background:#000">1.2 km</span>`}<div class="t-grey" style="position:absolute;left:16px;bottom:16px;font-size:12px;color:#ffffffb0">updated 2 min ago</div></button>
-    <button class="tile bgimg shade" data-act="sheet:evan" style="height:200px;background-image:url(${IMG("cafe")})"><div class="lab">Evan<small style="color:#ffffffb0">10:24 am 🇺🇸</small></div><span style="position:absolute;right:16px;top:16px">${av("evan",28)}</span><div class="col" style="position:absolute;inset:0;align-items:center;justify-content:center;padding-top:20px"><span style="font-size:48px">☕️</span><b style="font-weight:500;font-size:17px">At a café</b></div><div class="t-grey" style="position:absolute;left:16px;bottom:16px;font-size:12px;color:#ffffffbb">🔋 64%</div></button>
-    <button class="tile ${st.bg?"bgimg shade":""}" data-act="sheet:status" style="height:200px;${st.bg?`background-image:url(${IMG(st.bg)})`:""}"><div class="lab">You<small style="${st.bg?"color:#ffffffb0":""}">tap to change</small></div><span style="position:absolute;right:16px;top:16px">${av("leona",28)}</span><div class="col" style="position:absolute;inset:0;align-items:center;justify-content:center;padding-top:20px"><span style="font-size:48px">${st.e}</span><b style="font-weight:500;font-size:17px">${st.l}</b></div><div class="t-grey" style="position:absolute;left:16px;bottom:16px;font-size:12px;${st.bg?"color:#ffffffbb":""}">🔋 88%</div></button>
-  </div>
-  ${S.widgetAdded?"":`<div class="card row between" style="padding:10px 10px 10px 14px;border-radius:22px"><span class="row g10" style="font-size:14px;font-weight:500"><svg width="26" height="26" viewBox="0 0 26 26"><rect x="1" y="1" width="11" height="11" rx="3.5" fill="#F08BB0"/><rect x="14" y="1" width="11" height="11" rx="3.5" fill="#fff" fill-opacity=".35"/><rect x="1" y="14" width="24" height="11" rx="3.5" fill="#fff" fill-opacity=".35"/></svg>Evan, on your home screen</span><span class="row g6"><button class="chip" style="background:#fff;color:#000" data-act="sheet:widgetguide">Add</button><button data-act="widgetAdded" aria-label="Dismiss" style="padding:4px">${I.x}</button></span></div>`}
-  </div>${nav("home")}${hind}</div>`; };
+V.home = () => { const Z = S.quiz, q = QUESTIONS[Z.qi][0], st = S.status, both = Z.sent && Z.evan;
+  const anniv = S.anniv ? `<button class="tile mesh" data-act="toast:Share card ready" style="height:108px;padding:16px 18px;color:var(--ink)"><div style="font-size:13px;font-weight:500">Today · Nov 2</div><div><span class="num" style="font-size:32px">1 year</span> <span style="font-weight:500">together 🎉</span></div><div style="font-size:12px;opacity:.8">365 days of you, Evan & ${S.name}</div><span class="chip" style="position:absolute;right:16px;bottom:14px;background:#000;color:#fff">Share</span></button>`
+   : `<button class="tile" data-act="go:days" style="height:108px;padding:16px 18px"><div class="t-grey" style="font-size:13px">Evan & you</div><div><span class="num" style="font-size:34px">520</span> <span style="font-weight:500">${S.who==="friend"?"days as friends":"days together"}</span></div><div style="position:absolute;right:18px;top:24px;text-align:right"><div style="font-weight:500">1 year</div><div class="t-grey" style="font-size:12px">in 12 days · Nov 2</div></div><div style="position:absolute;left:18px;right:18px;bottom:18px;height:4px;border-radius:2px;background:var(--chip)"><div style="width:96%;height:100%;border-radius:2px;background:var(--sun)"></div></div></button>`;
+  const pill = both ? "✦ Both answered" : Z.sent ? "Waiting for Evan" : Z.evan ? "Evan answered" : "Evan · not yet";
+  const cta = both ? "See both answers" : Z.sent ? "You answered" : Z.evan ? "Your turn — tap to answer" : "Tap to answer";
+  const hero = `<button class="qcard" data-act="go:quiz" style="height:268px;border-radius:30px;background:${cardBg(Z.qi)}">
+    <span style="position:absolute;left:22px;top:22px;font-size:14px;font-weight:500;color:#ffffffcc">Daily Question</span>
+    <span class="chip" style="position:absolute;right:18px;top:16px;background:#0000004d;padding:4px 10px 4px 4px;font-size:12px;font-weight:400;${Z.evan&&!both?"color:var(--pink);font-weight:500":""}">${av("evan",20)}${pill}</span>
+    <span style="position:absolute;left:22px;right:28px;top:66px;font-size:30px;font-weight:600;line-height:1.17;text-wrap:balance">${q}</span>
+    <span class="row g8" style="position:absolute;left:22px;bottom:22px;font-size:14px;font-weight:500">${both?"✦":I.flipS}${cta}</span>
+    <span style="position:absolute;right:22px;bottom:22px;font-size:14px;font-weight:500">🔥 ${Z.streak}</span></button>`;
+  const half = (who) => { const ev = who === "evan", bg = ev ? "cafe" : st.bg, e = ev ? "☕️" : st.e, l = ev ? "At a café" : st.l;
+    return `<button data-act="${ev?"sheet:evan":"sheet:status"}" style="flex:1;position:relative;height:100%;text-align:left;${bg?`background:url(${IMG(bg)}) center/cover`:""}">${bg?`<span style="position:absolute;inset:0;background:#00000073"></span>`:""}
+      <span class="row g6" style="position:absolute;left:12px;top:12px;font-size:11px;color:${bg?"#ffffffbf":"var(--grey)"}">${av(ev?"evan":"leona",24)}${ev?"Evan · 10:24 am":"You · tap to change"}</span>
+      <span class="col" style="position:absolute;inset:0;align-items:center;justify-content:center;padding-top:6px;line-height:1.3"><span style="font-size:20px">${e}</span><b style="font-size:14px;font-weight:600">${l}</b></span>
+      <span style="position:absolute;left:12px;bottom:10px;font-size:12px;color:${bg?"#ffffffbf":"var(--grey)"}">🔋 ${ev?"64":"88"}%</span></button>`; };
+  return `<div class="scr">${sb()}
+  ${S.widgetAdded?"":`<button data-act="sheet:widgetguide" aria-label="Add a widget" style="position:absolute;left:329px;top:40px;width:34px;height:34px;border-radius:17px;background:var(--chip);box-shadow:0 0 0 3px #000;z-index:41;display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 26 26"><rect x="1" y="1" width="11" height="11" rx="3.5" fill="#fff"/><rect x="14" y="1" width="11" height="11" rx="3.5" fill="#fff" fill-opacity=".45"/><rect x="1" y="14" width="24" height="11" rx="3.5" fill="#fff" fill-opacity=".45"/></svg><span style="position:absolute;right:-1px;top:-1px;width:9px;height:9px;border-radius:5px;background:var(--pink)"></span></button>`}
+  <div class="col" style="gap:16px;padding:60px 12px 150px">
+  ${anniv}${hero}
+  <div class="col" style="gap:10px">
+    <div class="row" style="height:130px;border-radius:26px;overflow:hidden;background:var(--surf)">${half("evan")}${st.bg?"":`<span style="width:1px;height:48px;background:var(--chip);align-self:flex-start;margin-top:12px"></span>`}${half("me")}</div>
+    <button data-act="go:map" style="position:relative;height:130px;border-radius:26px;overflow:hidden;text-align:left;background:url(${IMG("map")}) center/cover">
+      <span style="position:absolute;inset:0;background:linear-gradient(90deg,#000d,#0008 60%,#0005)"></span>
+      <b style="position:absolute;left:16px;top:15px;font-size:15px;font-weight:600">Map</b>
+      <span style="position:absolute;left:16px;top:38px;font-size:11px;color:#ffffffb3">${S.evanPaused?"Evan paused sharing · 3h ago":"Evan · Santa Croce · 2 min ago"}</span>
+      <span class="row" style="position:absolute;right:16px;top:22px;gap:6px"><span class="row"><span style="${S.evanPaused?"opacity:.4":""}">${av("evan",28)}</span><span style="margin-left:-8px">${av("leona",28)}</span></span>${S.evanPaused?"":`<span class="chip" style="background:#000;padding:6px 12px">1.2 km</span>`}</span></button>
+  </div></div>${nav("home")}${hind}</div>`; };
 
 V.camera = () => { const r = S.reply; const secs = Math.max(0, Math.round((S.replyEnds - Date.now())/1000));
   const preview = S.camState==="preview";
@@ -386,28 +430,76 @@ V.past = () => { const d = S.pastDay || 19; const dow = ["Thu","Fri","Sat","Sun"
    <div class="t-grey" style="text-align:center;font-size:12px;margin-top:6px">Past days can’t be re-snapped — that’s what keeps it real.</div></div>${hind}</div>`; };
 
 /* ---- home subpages ---- */
-V.quiz = () => { const q = QUESTIONS[S.quiz.qi], Z = S.quiz;
-  if (Z.sent && Z.evan) return `<div class="scr">${sb()}<div class="top">${back()}<span class="title">Daily Quiz</span><span class="chip">#128</span></div>
-   <div class="pad col g12" style="padding-top:116px;padding-bottom:40px"><div style="font-size:20px;font-weight:600;line-height:1.3">${q}</div>
-   <span class="chip mesh" style="align-self:flex-start">✦ You both answered · 🔥 13 days</span>
-   <div class="card col g12" style="padding:16px"><div class="row g8">${av("evan",28)}<b style="font-weight:500">Evan</b><span class="t-grey" style="font-size:13px">10:31 am</span></div><div style="font-size:17px;line-height:1.4">The way you laughed at my terrible joke on FaceTime — I replayed it all day</div>
-     <div class="row g8">${["❤️","😂","🥺","🔥"].map(e=>`<button data-act="qreact:${e}" style="width:40px;height:32px;border-radius:16px;background:${S.qreact===e?"var(--act)":"var(--chip)"}">${e}</button>`).join("")}</div></div>
-   <div class="card col g12" style="padding:16px"><div class="row g8">${av("leona",28)}<b style="font-weight:500">You</b><span class="t-grey" style="font-size:13px">10:38 pm</span></div><div class="row g12" style="align-items:flex-start"><div style="font-size:17px;line-height:1.4;flex:1;min-width:0;word-wrap:break-word">${esc(Z.mine)}</div>${Z.photo?`<span style="width:74px;height:96px;border-radius:14px;background:url(${IMG("leona")}) center/cover;flex:none"></span>`:""}</div><span class="chip" style="align-self:flex-start;font-size:12px">Evan ❤️</span></div>
-   <div class="card row between" style="padding:12px 14px 12px 18px;border-radius:22px"><span class="t-grey" style="font-size:14px">Next question at 8:00 pm</span><button class="chip" data-act="go:pastq">Past questions ›</button></div></div>${hind}</div>`;
-  return `<div class="scr">${sb()}<div class="top">${back()}<span class="title">Daily Quiz</span><span class="chip">#128</span></div>
-   <div class="pad col g12" style="padding-top:116px;padding-bottom:120px"><div style="font-size:26px;font-weight:600;line-height:1.25">${q}</div>
-   ${!Z.evan&&!Z.sent?`<button class="chip" data-act="shuffle" style="align-self:flex-start;padding:6px 14px 6px 6px" ${Z.shuffles<1?"disabled style='opacity:.4'":""}><span style="width:28px;height:28px;border-radius:14px;background:var(--act);display:flex;align-items:center;justify-content:center">${I.shuffle}</span>Shuffle <span class="t-grey" style="font-weight:400">· ${Z.shuffles} left today</span></button>`:""}
-   <div class="card col g10" style="padding:16px"><div class="row g8">${av("evan",28)}<b style="font-weight:500">Evan</b><span class="t-grey" style="font-size:13px">${Z.evan?"answered 10:31":"hasn’t answered yet"}</span></div>
-     ${Z.evan?`<div class="col g6" style="filter:blur(4px)"><span style="height:9px;width:90%;border-radius:5px;background:#ffffff55"></span><span style="height:9px;width:60%;border-radius:5px;background:#ffffff55"></span></div><span class="t-grey" style="font-size:13px">🔒 Answer to see Evan’s</span>`
-       :`<span class="t-grey" style="font-size:13px">${Z.sent?"We’ll show you both answers once Evan replies.":"You’re first today — not into this one? Shuffle it."}</span>`}</div>
-   ${Z.sent?`<div class="card col g10" style="padding:16px"><div class="row g8">${av("leona",28)}<b style="font-weight:500">You</b><span class="t-grey" style="font-size:13px">sent</span></div><div style="font-size:17px">${esc(Z.mine)}</div></div>`
-    :`<div class="card col g12" style="padding:16px"><div class="row g8">${av("leona",28)}<b style="font-weight:500">You</b></div><textarea id="qans" class="field" rows="3" maxlength="200" placeholder="Type your answer…" style="padding:4px 0;background:none;border:0;font-size:17px">${esc(Z.mine)}</textarea>
-     ${Z.photo?`<span style="position:relative;width:72px;height:92px;border-radius:14px;background:url(${IMG("leona")}) center/cover"><button data-act="qphoto" aria-label="Remove photo" style="position:absolute;right:4px;top:4px;width:22px;height:22px;border-radius:11px;background:#0009;display:flex;align-items:center;justify-content:center">${I.x}</button></span>`:""}
-     <div class="row between"><button class="chip" data-act="qphoto">${Z.photo?"Change photo":"+ Photo"}</button><span class="t-grey" style="font-size:12px" id="qcount">${Z.mine.length} / 200</span></div></div>`}
-   </div>${Z.sent?"":`<div class="foot">${mesh("Send","qsend","id='qsendbtn'",!Z.mine.trim())}</div>`}${hind}</div>`; };
-V.pastq = () => `<div class="scr">${sb()}<div class="top">${back()}<span class="title">Past questions</span></div>
-  <div class="pad col g8" style="padding-top:116px;padding-bottom:40px"><div class="card row between" style="padding:16px 18px;margin-bottom:8px"><div class="col"><span><span style="font-size:24px">🔥</span> <span class="num" style="font-size:30px">13</span></span><span class="t-grey" style="font-size:13px">days in a row · best 21</span></div><div class="row g6">${[1,1,1,0,0,0,0].map(x=>`<span class="${x?"mesh":""}" style="width:20px;height:20px;border-radius:10px;${x?"":"background:var(--chip)"}"></span>`).join("")}</div></div>
-  ${[["Tue, Oct 20","If we could teleport anywhere tonight, where?",1],["Mon, Oct 19","What’s a song that reminds you of me?",1],["Sun, Oct 18","What’s one thing you want us to try this year?",1],["Sat, Oct 17","Describe our first date in three words",0],["Fri, Oct 16","What do you miss most when we’re apart?",1]].map(([d,q,b])=>`<div class="card row between g10" style="padding:14px 14px 14px 16px;border-radius:20px"><div class="col g6" style="min-width:0"><span class="t-grey" style="font-size:12px">${d}</span><b style="font-weight:500;font-size:15px;line-height:1.3">${q}</b></div><span class="row" style="flex:none"><span style="opacity:${b?1:.25}">${av("evan",26)}</span><span style="margin-left:-8px">${av("leona",26)}</span></span></div>`).join("")}</div>${hind}</div>`;
+/* Daily Question — one card a day: front = question (New question while nobody has answered), tap flips it,
+   back = write a line and/or one photo, then both answers reveal together. */
+const qTop = () => `<div class="top">${back()}<span class="title">Daily Question</span><button class="circle" data-act="go:ourcards" aria-label="Our cards">${I.grid}</button></div>`;
+const qLine = html => `<div class="row g8" style="position:absolute;left:0;right:0;top:96px;justify-content:center;font-size:13px;color:var(--grey)">${html}</div>`;
+const qHead = (q, flip, r=14) => `<div class="row between" style="position:absolute;left:18px;right:${r}px;top:16px;gap:10px;align-items:flex-start;z-index:2"><span style="font-size:13px;line-height:1.35;color:#ffffffbf;text-shadow:0 1px 6px #0006">${q}</span>${flip?`<button class="circle" data-act="qflipback" aria-label="Flip back" style="width:36px;height:36px;background:#ffffff1f;flex:none">${I.flipS}</button>`:""}</div>`;
+const myHalf = (Z, h) => Z.photo
+  ? `<div style="position:absolute;left:0;right:0;bottom:0;height:${h}px;background:url(${IMG("leona")}) center/cover"><span class="chip" style="position:absolute;left:12px;top:12px;background:#0008;padding:4px 10px 4px 4px">${av("leona",22)}You</span>${Z.mine.trim()?`<span style="position:absolute;left:12px;right:12px;bottom:12px;background:#000000a6;border-radius:16px;padding:10px 14px;font-size:14px;font-weight:500">${esc(Z.mine)}</span>`:""}</div>`
+  : `<div style="position:absolute;left:0;right:0;bottom:0;height:${h}px;background:#ffffff0d;border-top:1px solid #ffffff14"><span class="chip" style="position:absolute;left:12px;top:12px;background:#0006;padding:4px 10px 4px 4px">${av("leona",22)}You</span><span style="position:absolute;left:18px;right:18px;top:52px;font-size:19px;font-weight:600;line-height:1.3">${esc(Z.mine)}</span></div>`;
+
+V.quiz = () => { const Z = S.quiz, [q, evanA] = QUESTIONS[Z.qi], fx = Z.fx || ""; Z.fx = null;
+  const box = `position:absolute;left:16px;right:16px;top:164px;height:478px`;
+  /* 06 / 07 — answered: Evan on top (locked until he answers), me below */
+  if (Z.sent) { const both = Z.evan;
+    return `<div class="scr" style="overflow:hidden">${sb()}${qTop()}
+    ${both?`<div class="row" style="position:absolute;left:0;right:0;top:90px;justify-content:center"><span class="chip mesh ${fx==="reveal"?"pop":""}">✦ You both answered · 🔥 ${Z.streak} days</span></div>`:qLine(`${av("leona",22)}You answered · waiting for Evan`)}
+    <div class="qcard qback" style="${box};background:${backBg(Z.qi)}">${qHead(q,false)}
+      <div style="position:absolute;left:0;right:0;top:58px;bottom:212px">
+        <span class="chip" style="position:absolute;left:12px;top:6px;background:#0006;padding:4px 10px 4px 4px">${av("evan",22)}Evan</span>
+        ${both?`<span class="${fx==="reveal"?"reveal":""}" style="position:absolute;left:18px;right:18px;top:48px;font-size:21px;font-weight:600;line-height:1.3">${evanA}</span>`
+          :`<span class="col g8" style="position:absolute;inset:0;align-items:center;justify-content:center;color:var(--grey);font-size:13px;padding-top:20px">${I.lock}Shows up when Evan answers</span>`}</div>
+      ${myHalf(Z, 208)}</div>
+    ${both?`<div class="col g12" style="position:absolute;left:0;right:0;top:662px;align-items:center"><div class="row g12">${["❤️","😂","🥺","🔥"].map(e=>`<button data-act="qreact:${e}" aria-label="React ${e}" style="width:46px;height:46px;border-radius:23px;font-size:20px;background:${Z.react===e?"var(--act)":"var(--surf)"}">${e}</button>`).join("")}</div><span class="t-grey" style="font-size:12px">Next card tomorrow at 8:00 pm · <button data-act="go:ourcards" style="color:#fff;font-size:12px">Our cards ›</button></span></div>`
+     :`<div class="col g6" style="position:absolute;left:0;right:0;top:668px;align-items:center"><button class="chip" data-act="qnudge" ${Z.nudged?"disabled":""} style="padding:11px 18px;font-size:14px;${Z.nudged?"opacity:.5":""}">${Z.nudged?"Nudged ✓":"Nudge Evan 👋"}</button><span class="t-grey" style="font-size:12px">${Z.nudged?"We sent Evan a little poke":"Once a day"}</span></div>`}
+    ${hind}</div>`; }
+  const line = Z.evan ? `${av("evan",22)}<span style="color:var(--pink)">Evan answered · your turn</span>` : `${av("evan",22)}Evan hasn’t answered yet`;
+  /* 01 / 02 — card front */
+  if (Z.face === "front") { const locked = Z.evan, left = Z.shuffles;
+    return `<div class="scr" style="overflow:hidden">${sb()}${qTop()}${qLine(line)}
+    <div style="${box};perspective:1400px">
+      <span class="qcard" aria-hidden="true" style="position:absolute;inset:14px -8px -10px 8px;width:auto;opacity:.45;transform:rotate(3deg);background:${cardBg(Z.qi+1)}"></span>
+      <button class="qcard ${fx}" data-act="qflip" style="position:absolute;inset:0;background:${cardBg(Z.qi)}">
+        <span style="position:absolute;left:22px;top:22px;font-size:13px;color:#ffffffb3">#128 · Wed, Oct 21</span>
+        <span style="position:absolute;left:22px;right:22px;top:50%;transform:translateY(-50%);font-size:31px;font-weight:600;line-height:1.2;text-wrap:balance">${q}</span>
+        <span class="row g8" style="position:absolute;left:22px;bottom:24px;font-size:15px;font-weight:500">${I.flipS}${locked?"Tap to answer and see Evan’s":"Tap to answer"}</span></button></div>
+    <div class="col g6" style="position:absolute;left:0;right:0;top:672px;align-items:center"><button class="chip" data-act="qnew" ${locked||!left?"disabled":""} style="padding:10px 16px;font-size:14px;${locked||!left?"opacity:.4":""}">${I.newq}New question <span class="t-grey" style="font-weight:400">· ${left} left</span></button>
+      <span class="t-grey" style="font-size:12px">${locked?"Locked — Evan already answered this one":left?"Swaps it for both of you":"No more swaps today"}</span></div>${hind}</div>`; }
+  /* 03 / 04 / 05 — card back: write a line and/or one photo */
+  const ready = Z.mine.trim() || Z.photo;
+  let body;
+  if (Z.photo) body = `<div style="position:absolute;inset:0;background:url(${IMG("leona")}) center/cover" class="${fx==="flash"?"flash":""}"></div><div style="position:absolute;left:0;right:0;top:0;height:90px;background:linear-gradient(180deg,#000a,transparent)"></div>${qHead(q,false,62)}
+      <button class="circle" data-act="qnophoto" aria-label="Remove photo" style="position:absolute;right:14px;top:14px;width:36px;height:36px;background:#0009;z-index:3">${I.x}</button>
+      <textarea id="qans" rows="2" maxlength="200" placeholder="Add a line (optional)" aria-label="A line with your photo" style="position:absolute;left:12px;right:12px;bottom:14px;background:#000000a6;border:0;border-radius:16px;padding:10px 14px;color:#fff;font:500 15px/1.35 var(--f-body);outline:none;resize:none">${esc(Z.mine)}</textarea>`;
+  else if (Z.mode === "write") body = `${qHead(q,true)}<textarea id="qans" maxlength="200" placeholder="Write a line…" aria-label="Your answer" style="position:absolute;left:18px;right:18px;top:78px;bottom:72px;background:none;border:0;color:#fff;font:600 23px/1.3 var(--f-body);resize:none;outline:none">${esc(Z.mine)}</textarea>
+      <div class="row between" style="position:absolute;left:14px;right:18px;bottom:14px"><span class="row g8"><span class="circle" style="width:42px;height:42px;background:#ffffff26" aria-hidden="true"><b style="font-size:14px">Aa</b></span><button class="circle" data-act="qaddphoto" aria-label="Add a photo" style="width:42px;height:42px;background:#ffffff14">${I.camera}</button></span><span class="t-grey" style="font-size:12px" id="qcount">${Z.mine.length} / 200</span></div>`;
+  else body = `${qHead(q,true)}<button data-act="qmode:write" style="position:absolute;left:18px;right:18px;top:78px;text-align:left;font-size:23px;font-weight:500;color:#ffffff59">Write a line…</button>
+      <div style="position:absolute;left:14px;right:14px;bottom:14px"><div class="row g10">${[["write","Aa","Write","a line"],["photo",I.camera,"Photo","take or pick"]].map(([k,ic,t,s])=>`<button data-act="${k==="write"?"qmode:write":"qaddphoto"}" class="col" style="flex:1;height:96px;border-radius:22px;background:#ffffff14;padding:14px 16px;text-align:left;align-items:flex-start;justify-content:space-between"><b style="font-size:15px;font-weight:600">${ic}</b><span class="col"><b style="font-weight:600;font-size:15px">${t}</b><span class="t-grey" style="font-size:12px">${s}</span></span></button>`).join("")}</div><div class="t-grey" style="font-size:12px;margin:10px 4px 0">One or both</div></div>`;
+  return `<div class="scr" style="overflow:hidden">${sb()}${qTop()}${qLine(line)}
+    <div style="${box};perspective:1400px"><div class="qcard qback ${fx==="flipin"?"flipin":""}" style="position:absolute;inset:0;background:${backBg(Z.qi)}">${body}</div></div>
+    <div style="position:absolute;left:16px;right:16px;top:668px">${mesh("Send","qsend","id='qsendbtn'",!ready)}</div>${hind}</div>`; };
+
+V.ourcards = () => { const Z = S.quiz, both = Z.sent && Z.evan;
+  const today = ["Wed Oct 21", QUESTIONS[Z.qi][0], Z.qi, both ? "both" : Z.sent ? "wait" : Z.evan ? "turn" : "new"];
+  const foot = st => st === "both" ? `<span class="row"><span>${av("evan",24)}</span><span style="margin-left:-8px">${av("leona",24)}</span></span><span style="color:#F6C35A">✦</span>`
+    : st === "missed" ? `<span style="color:var(--pink);font-size:12px;font-weight:500">Missed · answer now</span>`
+    : st === "turn" ? `<span class="row g6" style="font-size:12px;font-weight:500">${av("evan",24)}Your turn</span>`
+    : st === "wait" ? `<span class="row g6" style="font-size:12px;font-weight:500">${av("leona",24)}Waiting for Evan</span>`
+    : `<span style="font-size:12px;font-weight:500">Today · tap to answer</span>`;
+  return `<div class="scr">${sb()}<div class="top">${back()}<span class="title">Our cards</span></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:110px 16px 40px">${[today, ...PASTQ].map((c, i) => `<button class="qcard" data-act="${i?"oldcard:"+(i-1):"back"}" style="height:216px;border-radius:24px;background:${cardBg(c[2])}">
+    <span style="position:absolute;left:14px;top:14px;font-size:12px;color:#ffffffb3">${c[0]}</span>
+    <span style="position:absolute;left:14px;right:14px;top:38px;font-size:17px;font-weight:600;line-height:1.25">${c[1]}</span>
+    <span class="row between" style="position:absolute;left:14px;right:14px;bottom:14px">${foot(c[3])}</span></button>`).join("")}</div>${hind}</div>`; };
+
+V.oldcard = () => { const [d, q, pi, st, ea, ma] = PASTQ[S.oldCard];
+  return `<div class="scr" style="overflow:hidden">${sb()}<div class="top">${back()}<span class="title">${d}</span></div>
+  <div class="qcard qback" style="position:absolute;left:16px;right:16px;top:120px;height:520px;background:${backBg(pi)}">${qHead(q,false)}
+    <div style="position:absolute;left:0;right:0;top:58px;height:220px"><span class="chip" style="position:absolute;left:12px;top:6px;background:#0006;padding:4px 10px 4px 4px">${av("evan",22)}Evan</span><span style="position:absolute;left:18px;right:18px;top:48px;font-size:21px;font-weight:600;line-height:1.3">${ea}</span></div>
+    <div style="position:absolute;left:0;right:0;bottom:0;height:242px;background:#ffffff0d;border-top:1px solid #ffffff14"><span class="chip" style="position:absolute;left:12px;top:12px;background:#0006;padding:4px 10px 4px 4px">${av("leona",22)}You</span><span style="position:absolute;left:18px;right:18px;top:52px;font-size:19px;font-weight:600;line-height:1.3">${ma}</span></div></div>
+  <div class="t-grey" style="position:absolute;left:0;right:0;top:664px;text-align:center;font-size:13px">Every card keeps its own colour</div>${hind}</div>`; };
+
 V.map = () => `<div class="scr" style="overflow:hidden">${sb()}<div style="position:absolute;inset:0;background:url(${IMG("map")}) center/cover;filter:brightness(.62) saturate(.35) contrast(1.1)"></div><div style="position:absolute;inset:0;background:linear-gradient(180deg,#000c,#0005 18%,#0005 62%,#000e 85%)"></div>
   <div class="top">${`<button class="circle" style="background:#0009" data-act="back" aria-label="Back">${I.back}</button>`}<span class="chip" style="position:absolute;left:50%;transform:translateX(-50%);background:#000;font-weight:600;font-size:14px;padding:9px 14px">${S.evanPaused?"Evan paused sharing":"1.2 km apart"}</span></div>
   ${S.evanPaused?`<span style="position:absolute;left:236px;top:196px;opacity:.35">${av("evan",52)}</span><span class="chip" style="position:absolute;left:244px;top:262px;background:#000;color:var(--grey);font-size:12px;padding:4px 9px">3h ago</span>`:`<svg style="position:absolute;left:120px;top:240px" width="150" height="170" viewBox="0 0 150 170" fill="none"><defs><linearGradient id="rt" x1="0" y1="170" x2="150" y2="0" gradientUnits="userSpaceOnUse"><stop stop-color="#F08BB0"/><stop offset="1" stop-color="#C77FA3"/></linearGradient></defs><path d="M4 166C45 94 90 76 146 4" stroke="url(#rt)" stroke-width="3" stroke-dasharray="2 8" stroke-linecap="round"/></svg><span style="position:absolute;left:236px;top:196px">${av("evan",52,"ev")}</span>`}
@@ -521,7 +613,7 @@ function bindInputs(){
   const on = (id, f) => { const el = document.getElementById(id); if (el) el.addEventListener("input", e => f(e.target.value, e.target)); };
   on("obname", v => S.obName = v);
   on("caption", v => S.caption = v);
-  on("qans", v => { S.quiz.mine = v; const c = document.getElementById("qcount"); if (c) c.textContent = `${v.length} / 200`; const b = document.getElementById("qsendbtn"); if (b) b.disabled = !v.trim(); });
+  on("qans", v => { S.quiz.mine = v; const c = document.getElementById("qcount"); if (c) c.textContent = `${v.length} / 200`; const b = document.getElementById("qsendbtn"); if (b) b.disabled = !v.trim() && !S.quiz.photo; });
   on("ndname", v => S.newDay.n = v); on("nddate", v => S.newDay.d = v);
   on("snote", v => S.draft.note = v);
   on("codein", (v, el) => { S.code = v.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0,6); render(); const n = document.getElementById("codein"); if (n){ n.focus(); n.setSelectionRange(9,9); } });
@@ -534,6 +626,9 @@ function pop(btn, emoji){
   [["💗",-46,-250,.05],["✨",34,-300,.09],["❤️",78,-210,.12],["💕",-8,-330,.15]].forEach(([c,dx,dy,d]) => { const s = document.createElement("div"); s.className = "spark"; s.textContent = c; s.style.left = (x - 9) + "px"; s.style.top = (y - 12) + "px"; s.style.setProperty("--dx", dx + "px"); s.style.setProperty("--dy", dy + "px"); s.style.animationDelay = d + "s"; s.style.opacity = 0; phone.appendChild(s); setTimeout(() => s.remove(), 1000); });
   setTimeout(() => { f.remove(); }, 1650);
 }
+
+function reveal(){ const Z = S.quiz; if (Z.sent && Z.evan && !Z.revealed){ Z.revealed = true; Z.streak++; Z.fx = "reveal"; } }
+const focusQ = () => setTimeout(()=>{ const t = document.getElementById("qans"); if (t){ t.focus(); t.setSelectionRange(t.value.length, t.value.length); } }, 30);
 
 let cdT;
 function startCountdown(){ clearInterval(cdT); cdT = setInterval(() => { const el = document.getElementById("countdown"); const secs = Math.max(0, Math.round((S.replyEnds - Date.now())/1000)); if (secs <= 0){ S.reply = false; clearInterval(cdT); if (screenKey()==="camera") render(); return; } if (el) el.textContent = `Snapping back to Evan · ${Math.floor(secs/60)}:${String(secs%60).padStart(2,"0")}`; }, 1000); }
@@ -557,9 +652,15 @@ const A = {
   closeask(){ S.deleteAsk = false; S.unlinkAsk = false; render(); },
   askunlink(){ S.unlinkAsk = true; render(); },
   unlink(){ S.unlinkAsk = false; S.connected = false; S.stack = ["app"]; S.tab = "me"; toast("Unlinked from Evan"); },
-  shuffle(){ if (S.quiz.shuffles < 1) return; S.quiz.shuffles--; S.quiz.qi = (S.quiz.qi + 1) % QUESTIONS.length; S.quiz.mine = ""; toast("New question for both of you"); },
-  qphoto(){ S.quiz.photo = !S.quiz.photo; render(); },
-  qsend(){ if (!S.quiz.mine.trim()) return; S.quiz.sent = true; render(); if (!S.quiz.evan) setTimeout(()=>{ S.quiz.evan = true; if (screenKey()==="quiz") render(); toast("Evan answered — see both answers"); }, 3500); },
+  qflip(){ const c = phone.querySelector('[data-act="qflip"]'); if (c){ c.classList.remove("deal","flipin"); c.classList.add("flipout"); } setTimeout(()=>{ S.quiz.face = "back"; S.quiz.fx = "flipin"; render(); }, 200); },
+  qflipback(){ const c = phone.querySelector(".qback"); if (c){ c.classList.remove("flipin"); c.classList.add("flipout"); } setTimeout(()=>{ S.quiz.face = "front"; S.quiz.fx = "flipin"; render(); }, 200); },
+  qnew(){ const Z = S.quiz; if (Z.evan || Z.shuffles < 1) return; const c = phone.querySelector('[data-act="qflip"]'); if (c){ c.classList.remove("deal","flipin"); c.classList.add("swipe"); }
+    setTimeout(()=>{ Z.shuffles--; Z.qi = (Z.qi + 1) % QUESTIONS.length; Z.mine = ""; Z.photo = false; Z.mode = null; Z.fx = "deal"; toast("New card — Evan sees it too"); }, 300); },
+  qaddphoto(){ S.quiz.photo = true; S.quiz.fx = "flash"; render(); },
+  qnophoto(){ S.quiz.photo = false; S.quiz.mode = "write"; render(); focusQ(); },
+  qsend(){ const Z = S.quiz; if (!Z.mine.trim() && !Z.photo) return; Z.sent = true; if (Z.evan) reveal(); toast(Z.evan ? "Both answers revealed" : "Sent — Evan sees it once he answers");
+    if (!Z.evan){ const s0 = S; setTimeout(()=>{ if (S !== s0 || Z.evan) return; Z.evan = true; reveal(); toast("Evan answered — both cards revealed 🔥"); }, 8000); } },
+  qnudge(){ S.quiz.nudged = true; toast("Nudged Evan 👋"); },
   setstatus(){ const d = S.draft; S.status = { e:d.e, l:d.l, bg: d.bg==="none"?null:(d.bg==="photo"?"leona":d.bg) }; S.stack = ["app"]; S.tab = "home"; toast("Status set · Evan’s widget updated"); },
   saveday(){ const n = S.newDay; const name = n.n.trim() || "Next time we meet"; const dt = new Date(n.d + "T00:00"); const diff = Math.max(1, Math.round((dt - new Date("2026-10-21T00:00"))/86400000));
     S.days.push([n.e, name, dt.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"}), diff]); S.days.sort((a,b)=>a[3]-b[3]); S.newDay = {e:"✈️",n:"",d:"2026-12-20"}; goBack(); toast("Added — we’ll remind you both"); },
@@ -587,7 +688,9 @@ phone.addEventListener("click", e => {
   if (k === "who") { S.who = v; return render(); }
   if (k === "perm") { S["perm" + v] = true; return render(); }
   if (k === "react") { S.reaction = v; render(); const nb = [...phone.querySelectorAll('[data-act^="react:"]')].find(x => x.dataset.act === a); if (nb){ nb.classList.add("pop"); pop(nb, v); } setTimeout(()=>toast(`Sent ${v} to Evan · it shows on their widget`), 1500); return; }
-  if (k === "qreact") { S.qreact = v; render(); return; }
+  if (k === "qreact") { S.quiz.react = v; render(); const nb = [...phone.querySelectorAll('[data-act^="qreact:"]')].find(x => x.dataset.act === a); if (nb){ nb.classList.add("pop"); pop(nb, v); } setTimeout(()=>toast(`Sent ${v} to Evan`), 1500); return; }
+  if (k === "qmode") { S.quiz.mode = v; render(); return focusQ(); }
+  if (k === "oldcard") { const c = PASTQ[+v]; if (c[3] !== "both") return toast(c[3] === "missed" ? "Late answers still reveal — they just don’t add to the streak" : "Evan answered — answer to see his"); S.oldCard = +v; return go("oldcard"); }
   if (k === "past") { S.pastDay = +v; return go("past"); }
   if (k === "pick") { const [e2, l2] = a.slice(5).split("|"); S.draft.e = e2; S.draft.l = l2; return render(); }
   if (k === "cat") { S.draft.cat = v; return render(); }
@@ -606,7 +709,7 @@ document.addEventListener("click", e => {
     else { S.stack = ["app", t]; if (t === "paywall") S.slide = 1; render(); } return; }
   const s = e.target.closest("[data-sim]"); if (!s) return; const m = s.dataset.sim;
   if (m === "snap") { if (top_().startsWith("ob-")) { S.stack = ["app"]; S.tab = "home"; } S.push = true; render(); setTimeout(()=>{ if (S.push){ S.push = false; render(); } }, 7000); }
-  if (m === "answer") { S.quiz.evan = true; if (top_().startsWith("ob-")) S.stack = ["app"]; render(); toast("Evan answered today’s question"); }
+  if (m === "answer") { S.quiz.evan = true; reveal(); if (top_().startsWith("ob-")) S.stack = ["app"]; render(); toast("Evan answered today’s question"); }
   if (m === "pause") { S.evanPaused = !S.evanPaused; render(); toast(S.evanPaused ? "Evan paused location sharing" : "Evan is sharing location again"); }
   if (m === "anniv") { S.anniv = !S.anniv; toApp("home"); }
   if (m === "reset") { S = fresh(); render(); }
